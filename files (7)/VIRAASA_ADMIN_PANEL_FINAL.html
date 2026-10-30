@@ -1,0 +1,1807 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>VIRAASA Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+      :root {
+        --bg: #f5efe4;
+        --card: #fffdf8;
+        --text: #241a14;
+        --muted: #705f50;
+        --line: #d8c6aa;
+        --gold: #b08a52;
+        --gold2: #98733e;
+        --deep: #4a2c1a;
+        --warm: #8a6240;
+        --red: #a83d32;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .app {
+        min-height: 100vh;
+        display: flex;
+      }
+      .side {
+        width: 240px;
+        background: var(--deep);
+        color: #fff;
+        padding: 24px 15px;
+        position: fixed;
+        inset: 0 auto 0 0;
+        border-right: 2px solid var(--gold);
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        padding: 5px 12px 28px;
+      }
+      .logo span {
+        color: var(--gold);
+      }
+      .nav button {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: #eadfce;
+        text-align: left;
+        padding: 13px 14px;
+        border-radius: 9px;
+        margin: 3px 0;
+        cursor: pointer;
+      }
+      .nav button.active,
+      .nav button:hover {
+        background: var(--gold);
+        color: #241a14;
+      }
+      .main {
+        margin-left: 240px;
+        width: calc(100% - 240px);
+        padding: 28px;
+        background: var(--bg);
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 22px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 18px rgba(74, 44, 26, 0.08);
+      }
+      .btn {
+        border: 0;
+        border-radius: 9px;
+        padding: 11px 15px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .primary {
+        background: var(--deep);
+        color: #f5efe4;
+        border: 1px solid var(--gold);
+      }
+      .primary:hover {
+        background: var(--gold2);
+      }
+      .secondary {
+        background: #fffdf8;
+        border: 1px solid var(--gold);
+        color: var(--deep);
+      }
+      .danger {
+        background: #fff0ed;
+        color: var(--red);
+        border: 1px solid #e7b6ad;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 18px;
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .stat b {
+        display: block;
+        font-size: 28px;
+        margin-top: 5px;
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .search,
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 1px solid #cdbb9f;
+        border-radius: 9px;
+        padding: 11px;
+        background: #fffdf8;
+        color: var(--text);
+        font: inherit;
+      }
+      textarea {
+        min-height: 130px;
+        resize: vertical;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+      .place {
+        padding: 0;
+        overflow: hidden;
+      }
+      .thumb {
+        height: 155px;
+        background: #e9ddca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        overflow: hidden;
+      }
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .placebody {
+        padding: 15px;
+      }
+      .placebody h3 {
+        margin: 0 0 6px;
+      }
+      .placebody p {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0 0 12px;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .actions .btn {
+        padding: 8px 11px;
+        font-size: 12px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .editor-tools {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+      }
+      .editor-tools .btn {
+        white-space: nowrap;
+      }
+      .formgrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+      .full {
+        grid-column: 1/-1;
+      }
+      label {
+        font-size: 13px;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 7px;
+      }
+      .filebox {
+        border: 1px dashed #b7c3d3;
+        border-radius: 9px;
+        padding: 12px;
+      }
+      .preview {
+        display: none;
+        max-width: 100%;
+        max-height: 160px;
+        margin-top: 10px;
+        border-radius: 7px;
+      }
+      .preview.show {
+        display: block;
+      }
+      .notice {
+        background: #eee2cf;
+        color: #4a2c1a;
+        padding: 12px 14px;
+        border-radius: 9px;
+        font-size: 13px;
+        margin-bottom: 15px;
+        border: 1px solid #d8c6aa;
+      }
+      .toast {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        background: #172033;
+        color: #fff;
+        padding: 13px 17px;
+        border-radius: 9px;
+        display: none;
+      }
+      .toast.show {
+        display: block;
+      }
+      .upload-progress { margin-top: 10px; height: 8px; background: #eadfce; border-radius: 999px; overflow: hidden; display: none; }
+      .upload-progress.show { display: block; }
+      .upload-progress > div { height: 100%; width: 0%; background: var(--gold); transition: width .15s ease; }
+      .upload-status { margin-top: 6px; color: var(--muted); font-size: 12px; display: none; }
+      .upload-status.show { display: block; }
+      .filecheck { font-size: 12px; margin-top: 6px; white-space: pre-line; }
+      .filecheck.ok { color: #3f6b1f; } .filecheck.bad { color: var(--red); font-weight: 700; } .filecheck.warn { color: #8a5a00; }
+      .curmedia { font-size: 12px; margin-top: 8px; color: var(--muted); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+      .curmedia video { max-width: 260px; max-height: 150px; border-radius: 7px; background: #000; }
+      .curmedia audio { max-width: 300px; height: 34px; }
+      .limits { background: #fff7e6; border: 2px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: 13px; line-height: 1.6; margin: 10px 0 14px; }
+      .limits b.big { color: var(--deep); font-size: 15px; }
+      .limits code { background: #f1e6d0; padding: 1px 6px; border-radius: 5px; font-size: 12px; }
+      #saveError { white-space: pre-line; } #importReport { white-space: pre-line; display: none; } #importReport.show { display: block; }
+      .btn.mini { padding: 4px 9px; font-size: 11px; }
+      .auth-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--bg);
+      }
+      .auth-card {
+        width: min(430px, 100%);
+      }
+      .auth-logo {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: 4px;
+        margin-bottom: 8px;
+      }
+      .auth-logo span {
+        color: var(--gold);
+      }
+      .auth-error {
+        display: none;
+        background: #fff0ed;
+        color: var(--red);
+        border: 1px solid #e7b6ad;
+        border-radius: 9px;
+        padding: 10px 12px;
+        font-size: 13px;
+        margin-bottom: 14px;
+      }
+      .auth-error.show {
+        display: block;
+      }
+      .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #6b8e23;
+        margin-right: 7px;
+      }
+      @media (max-width: 850px) {
+        .side {
+          width: 200px;
+        }
+        .main {
+          margin-left: 200px;
+          width: calc(100% - 200px);
+        }
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .app {
+          display: block;
+        }
+        .side {
+          position: static;
+          width: 100%;
+          height: auto;
+        }
+        .main {
+          margin: 0;
+          width: 100%;
+          padding: 17px;
+        }
+        .grid,
+        .stats,
+        .formgrid {
+          grid-template-columns: 1fr;
+        }
+        .editor-tools {
+          justify-content: flex-start;
+        }
+        .full {
+          grid-column: auto;
+        }
+        .top {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="authScreen" class="auth-wrap">
+      <div class="card auth-card">
+        <div class="auth-logo">VIR<span>A</span>ASA</div>
+        <h1 style="margin: 0 0 6px">Admin Login</h1>
+        <div class="sub" style="margin-bottom: 20px">
+          Sign in to manage VIRAASA heritage content
+        </div>
+        <div id="authError" class="auth-error"></div>
+        <form onsubmit="login(event)">
+          <label>Email</label>
+          <input
+            id="loginEmail"
+            type="email"
+            autocomplete="email"
+            required
+            placeholder="admin@example.com"
+          />
+          <label style="margin-top: 14px">Password</label>
+          <input
+            id="loginPassword"
+            type="password"
+            autocomplete="current-password"
+            required
+            placeholder="Your password"
+          />
+          <label style="margin-top: 8px; font-weight: 400; cursor: pointer">
+            <input type="checkbox" style="width: auto; margin-right: 6px" onchange="document.getElementById('loginPassword').type = this.checked ? 'text' : 'password'" />Show password
+          </label>
+          <button
+            id="loginBtn"
+            class="btn primary"
+            style="width: 100%; margin-top: 18px"
+          >
+            LOGIN
+          </button>
+        </form>
+        <p class="sub" style="font-size: 12px; margin-top: 15px">
+          Use an email/password user created in Supabase Authentication and
+          added to the VIRAASA admin list.
+        </p>
+      </div>
+    </div>
+
+    <div id="appShell" class="app hidden">
+      <aside class="side">
+        <div class="logo">VIR<span>A</span>ASA</div>
+        <div class="nav">
+          <button class="active" onclick="page('dashboard', this)">
+            ▦ Dashboard
+          </button>
+          <button onclick="page('places', this)">◉ Heritage Places</button>
+          <button onclick="page('comments', this)">💬 Comments</button>
+          <button onclick="page('settings', this)">⚙ Settings</button>
+        </div>
+        <button
+          class="btn secondary"
+          style="width: 100%; margin-top: 25px"
+          onclick="logout()"
+        >
+          Logout
+        </button>
+      </aside>
+
+      <main class="main">
+        <section id="dashboard">
+          <div class="top">
+            <div>
+              <h1>Dashboard</h1>
+              <div class="sub">Manage VIRAASA heritage content</div>
+            </div>
+            <button class="btn primary" onclick="openEditor()">
+              + ADD NEW PLACE
+            </button>
+          </div>
+          <div class="stats">
+            <div class="card stat">
+              <span>Total Places</span><b id="count">0</b>
+            </div>
+            <div class="card stat">
+              <span>Published</span><b id="published">0</b>
+            </div>
+            <div class="card stat">
+              <span>Places with Media</span><b id="media">0</b>
+            </div>
+          </div>
+          <div class="card">
+            <h2>VIRAASA Admin</h2>
+            <p class="sub">
+              Manage places, create each place's customer link, and generate its
+              printable VIRAASA QR code. Data and media are stored in Supabase.
+            </p>
+            <button
+              class="btn primary"
+              onclick="
+                page('places', document.querySelectorAll('.nav button')[1])
+              "
+            >
+              MANAGE PLACES
+            </button>
+          </div>
+        </section>
+
+        <section id="places" class="hidden">
+          <div class="top">
+            <div>
+              <h1>Heritage Places</h1>
+              <div class="sub">Manage all VIRAASA locations</div>
+            </div>
+            <button class="btn primary" onclick="openEditor()">
+              + ADD NEW PLACE
+            </button>
+          </div>
+          <div class="notice">
+            Live mode: records and uploaded media are stored in Supabase.
+            QR links are generated from the Customer Website URL in Settings.
+          </div>
+          <div class="toolbar">
+            <input
+              id="search"
+              placeholder="Search places..."
+              oninput="render()"
+            />
+          </div>
+          <div id="grid" class="grid"></div>
+        </section>
+
+        <section id="editor" class="hidden">
+          <div class="top">
+            <div>
+              <h1 id="editorHeading">Add New Place</h1>
+              <div class="sub">
+                Everything is stored in Supabase. QR uses the permanent slug.
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <form onsubmit="save(event)">
+              <input type="hidden" id="id" />
+              <input
+                id="jsonImportFile"
+                type="file"
+                accept="application/json,.json"
+                style="display: none"
+                onchange="importPlaceJSON(this)"
+              />
+              <div class="editor-tools">
+                <button
+                  type="button"
+                  class="btn secondary"
+                  onclick="document.getElementById('jsonImportFile').click()"
+                >
+                  IMPORT JSON
+                </button>
+                <button
+                  type="button"
+                  class="btn secondary"
+                  onclick="downloadJSONTemplate()"
+                >
+                  JSON TEMPLATE
+                </button>
+                <button
+                  type="button"
+                  class="btn secondary"
+                  onclick="
+                    page('places', document.querySelectorAll('.nav button')[1])
+                  "
+                >
+                  ← BACK
+                </button>
+              </div>
+              <div id="saveError" class="auth-error"></div>
+              <div id="importReport" class="notice"></div>
+              <div class="formgrid">
+                <div>
+                  <label>Place Name (English) *</label
+                  ><input id="titleEn" required />
+                </div>
+                <div>
+                  <label>Place Name (Gujarati)</label><input id="titleGu" />
+                </div>
+                <div>
+                  <label>Place Name (Hindi)</label><input id="titleHi" />
+                </div>
+                <div>
+                  <label>Slug *</label><input id="slugField" required />
+                </div>
+                <div><label>Location</label><input id="location" /></div>
+                <div>
+                  <label>Era / Period</label
+                  ><input
+                    id="era"
+                    placeholder="e.g. 12th Century CE — Solanki Period"
+                  />
+                </div>
+                <div>
+                  <label>Category</label
+                  ><input id="category" list="categoryList" /><datalist
+                    id="categoryList"
+                  >
+                    <option>Heritage</option>
+                    <option>Temple</option>
+                    <option>Architecture</option>
+                    <option>Museum</option>
+                    <option>Historical Site</option>
+                    <option>Fort</option>
+                    <option>Palace</option>
+                    <option>Other</option>
+                  </datalist>
+                </div>
+                <div>
+                  <label>Status</label
+                  ><select id="active">
+                    <option value="true">Published</option>
+                    <option value="false">Draft</option>
+                  </select>
+                </div>
+                <div>
+                  <label>QR Enabled</label
+                  ><select id="qrEnabled">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+
+                <div class="full"><h3>ABOUT — 3 Languages</h3></div>
+                <div class="full">
+                  <label>About — English</label
+                  ><textarea id="aboutEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>About — Gujarati</label
+                  ><textarea id="aboutGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>About — Hindi</label><textarea id="aboutHi"></textarea>
+                </div>
+                <div class="full"><h3>HISTORICAL STORY — 3 Languages</h3></div>
+                <div class="full">
+                  <label>History — English</label
+                  ><textarea id="historyEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>History — Gujarati</label
+                  ><textarea id="historyGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>History — Hindi</label
+                  ><textarea id="historyHi"></textarea>
+                </div>
+                <div class="full"><h3>ARCHITECTURE — 3 Languages</h3></div>
+                <div class="full">
+                  <label>Architecture — English</label
+                  ><textarea id="architectureEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>Architecture — Gujarati</label
+                  ><textarea id="architectureGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>Architecture — Hindi</label
+                  ><textarea id="architectureHi"></textarea>
+                </div>
+                <div class="full"><h3>IMPORTANT FACTS — 3 Languages</h3></div>
+                <div class="full">
+                  <label>Facts — English</label
+                  ><textarea id="factsEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>Facts — Gujarati</label
+                  ><textarea id="factsGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>Facts — Hindi</label><textarea id="factsHi"></textarea>
+                </div>
+                <div class="full"><h3>WHY IT MATTERS — 3 Languages</h3></div>
+                <div class="full">
+                  <label>Why It Matters — English</label
+                  ><textarea id="whyEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>Why It Matters — Gujarati</label
+                  ><textarea id="whyGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>Why It Matters — Hindi</label
+                  ><textarea id="whyHi"></textarea>
+                </div>
+                <div class="full">
+                  <h3>6TH CUSTOM SECTION — PLACE SPECIFIC</h3>
+                  <div class="sub">
+                    Example: Connection to Vadnagar / Connection to Agra /
+                    Connection to Dwarka.
+                  </div>
+                </div>
+                <div>
+                  <label>Section Title — English</label
+                  ><input id="connectionTitleEn" />
+                </div>
+                <div>
+                  <label>Section Title — Gujarati</label
+                  ><input id="connectionTitleGu" />
+                </div>
+                <div>
+                  <label>Section Title — Hindi</label
+                  ><input id="connectionTitleHi" />
+                </div>
+                <div class="full">
+                  <label>Section Content — English</label
+                  ><textarea id="connectionTextEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>Section Content — Gujarati</label
+                  ><textarea id="connectionTextGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>Section Content — Hindi</label
+                  ><textarea id="connectionTextHi"></textarea>
+                </div>
+
+                <div class="full"><h3>MEDIA</h3>
+                  <div id="limitBox" class="limits"></div>
+                  <div id="uploadProgress" class="upload-progress"><div id="uploadProgressBar"></div></div>
+                  <div id="uploadStatus" class="upload-status">Ready</div>
+                </div>
+                <div class="full">
+                  <label>Hero Image <span class="sub" data-hint="image"></span></label>
+                  <input id="image" type="file" accept="image/*" onchange="imagePreview(this);checkPicked(this)" /><img id="preview" class="preview" />
+                  <div class="filecheck" id="chk_image"></div>
+                  <div class="curmedia" id="cur_image"></div>
+                </div>
+                <div class="full">
+                  <label>English Video <span class="sub" data-hint="video"></span></label>
+                  <input id="videoEn" type="file" accept="video/mp4,video/webm,video/quicktime,video/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_videoEn"></div>
+                  <div class="curmedia" id="cur_videoEn"></div>
+                </div>
+                <div class="full">
+                  <label>Gujarati Video <span class="sub" data-hint="video"></span></label>
+                  <input id="videoGu" type="file" accept="video/mp4,video/webm,video/quicktime,video/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_videoGu"></div>
+                  <div class="curmedia" id="cur_videoGu"></div>
+                </div>
+                <div class="full">
+                  <label>Hindi Video <span class="sub" data-hint="video"></span></label>
+                  <input id="videoHi" type="file" accept="video/mp4,video/webm,video/quicktime,video/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_videoHi"></div>
+                  <div class="curmedia" id="cur_videoHi"></div>
+                </div>
+                <div class="full">
+                  <label>English Audio <span class="sub" data-hint="audio"></span></label>
+                  <input id="audioEn" type="file" accept="audio/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_audioEn"></div>
+                  <div class="curmedia" id="cur_audioEn"></div>
+                </div>
+                <div class="full">
+                  <label>Gujarati Audio <span class="sub" data-hint="audio"></span></label>
+                  <input id="audioGu" type="file" accept="audio/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_audioGu"></div>
+                  <div class="curmedia" id="cur_audioGu"></div>
+                </div>
+                <div class="full">
+                  <label>Hindi Audio <span class="sub" data-hint="audio"></span></label>
+                  <input id="audioHi" type="file" accept="audio/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_audioHi"></div>
+                  <div class="curmedia" id="cur_audioHi"></div>
+                </div>
+                <div class="full">
+                  <label>English Audio Cover <span class="sub" data-hint="image"></span></label>
+                  <input id="coverEn" type="file" accept="image/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_coverEn"></div>
+                  <div class="curmedia" id="cur_coverEn"></div>
+                </div>
+                <div class="full">
+                  <label>Gujarati Audio Cover <span class="sub" data-hint="image"></span></label>
+                  <input id="coverGu" type="file" accept="image/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_coverGu"></div>
+                  <div class="curmedia" id="cur_coverGu"></div>
+                </div>
+                <div class="full">
+                  <label>Hindi Audio Cover <span class="sub" data-hint="image"></span></label>
+                  <input id="coverHi" type="file" accept="image/*" onchange="checkPicked(this)" />
+                  <div class="filecheck" id="chk_coverHi"></div>
+                  <div class="curmedia" id="cur_coverHi"></div>
+                </div>
+                <div class="full">
+                  <h3>QR CODE</h3>
+                  <input
+                    id="placeLink"
+                    readonly
+                    placeholder="Save the place to generate its QR link"
+                  />
+                  <div id="qrcode" style="margin: 15px 0"></div>
+                  <div class="actions">
+                    <button
+                      type="button"
+                      class="btn secondary"
+                      onclick="copyPlaceLink()"
+                    >
+                      COPY LINK</button
+                    ><button
+                      type="button"
+                      class="btn secondary"
+                      onclick="openPlaceLink()"
+                    >
+                      OPEN</button
+                    ><button
+                      type="button"
+                      class="btn primary"
+                      onclick="downloadQR()"
+                    >
+                      DOWNLOAD QR
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: flex-end;
+                  margin-top: 20px;
+                "
+              >
+                <button class="btn primary" type="submit">SAVE PLACE</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="comments" class="hidden">
+          <div class="top">
+            <div>
+              <h1>Comments</h1>
+              <div class="sub">Review and delete visitor comments.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="toolbar">
+              <select id="commentPlaceFilter" onchange="loadAdminComments()">
+                <option value="">All places</option>
+              </select>
+            </div>
+            <div id="adminCommentsList"></div>
+          </div>
+        </section>
+
+        <section id="settings" class="hidden">
+          <div class="top">
+            <div>
+              <h1>Settings</h1>
+              <div class="sub">Backend connection</div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>VIRAASA Connection</h2>
+            <p style="font-size: 13px">
+              <span class="status-dot"></span
+              ><span id="connectionStatus">Checking Supabase...</span>
+            </p>
+            <p class="sub">
+              Set the customer website address used for every place QR code and
+              link.
+            </p>
+            <label style="margin-top: 18px">Customer Website URL</label>
+            <input
+              id="customerBase"
+              placeholder="https://your-viraasa-site.com"
+            />
+            <p style="font-size: 12px; color: var(--muted); margin-top: 7px">
+              Example: if your customer site is <b>https://viraasa.in</b>, the
+              place link becomes <b>https://viraasa.in/?place=kirti-toran</b>.
+            </p>
+
+            <h3 style="margin-top: 22px">Supabase</h3>
+            <p class="sub">
+              The admin panel uses the Supabase project configured below. The
+              publishable key is safe for browser use; never use a
+              service-role/secret key here.
+            </p>
+            <label style="margin-top: 18px">Project URL</label>
+            <input id="sburl" placeholder="https://your-project.supabase.co" />
+            <label style="margin-top: 14px">Publishable Key</label>
+            <input id="sbkey" placeholder="Your Supabase publishable key" />
+            <button
+              class="btn primary"
+              style="margin-top: 15px"
+              onclick="saveSettings()"
+            >
+              SAVE SETTINGS
+            </button>
+            <div class="notice" style="margin-top: 15px">
+              Never put a Supabase service-role/secret key in this browser
+              panel.
+            </div>
+            <h3 style="margin-top: 26px">Upload limits</h3>
+            <div id="limitBoxSettings" class="limits"></div>
+            <div class="formgrid">
+              <div><label>Max video size (MB)</label><input id="limVideoMB" type="number" min="1" /></div>
+              <div><label>Max video length (minutes)</label><input id="limVideoMin" type="number" min="1" /></div>
+              <div><label>Max audio size (MB)</label><input id="limAudioMB" type="number" min="1" /></div>
+              <div><label>Max audio length (minutes)</label><input id="limAudioMin" type="number" min="1" /></div>
+            </div>
+            <p style="font-size: 12px; color: var(--muted)">Supabase Free plan = 50 MB per file (hard limit set by Supabase). If you upgrade the Supabase plan and raise the limit in Supabase → Storage → Settings, raise the video size here too, then press SAVE SETTINGS.</p>
+            <button class="btn secondary" style="margin-top: 8px" onclick="runStorageCheck()">TEST STORAGE (uploads &amp; permissions)</button>
+            <div id="storageCheckResult" class="filecheck" style="font-size: 13px; line-height: 1.7"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const SUPABASE_URL = "https://oegqphllucqywrykeqbs.supabase.co";
+      const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_dfk_GhoYm_eRCw4qrjwN2A_CnoTH7qh";
+
+      // VIRAASA upload policy. Supabase Free projects currently cap individual
+      // files at 50 MB; the application also keeps videos to 3 minutes so the
+      // admin workflow remains predictable for the client. If the Supabase
+      // project is upgraded and the global/bucket limit is raised, these values
+      // can be increased deliberately.
+      let MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+      let MAX_VIDEO_SECONDS = 3 * 60;
+      let MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+      let MAX_AUDIO_SECONDS = 10 * 60;
+      const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+      let uploading = false;
+      let removedMedia = {};
+      const MEDIA_FIELDS = [
+        { id: "image", col: "image_url", bucket: "images", kind: "image", label: "hero image" },
+        { id: "videoEn", col: "video_en", bucket: "videos", kind: "video", label: "English video" },
+        { id: "videoGu", col: "video_gu", bucket: "videos", kind: "video", label: "Gujarati video" },
+        { id: "videoHi", col: "video_hi", bucket: "videos", kind: "video", label: "Hindi video" },
+        { id: "audioEn", col: "audio_en", bucket: "audio", kind: "audio", label: "English audio" },
+        { id: "audioGu", col: "audio_gu", bucket: "audio", kind: "audio", label: "Gujarati audio" },
+        { id: "audioHi", col: "audio_hi", bucket: "audio", kind: "audio", label: "Hindi audio" },
+        { id: "coverEn", col: "audio_cover_en", bucket: "images", kind: "image", label: "English audio cover", folder: "audio-covers" },
+        { id: "coverGu", col: "audio_cover_gu", bucket: "images", kind: "image", label: "Gujarati audio cover", folder: "audio-covers" },
+        { id: "coverHi", col: "audio_cover_hi", bucket: "images", kind: "image", label: "Hindi audio cover", folder: "audio-covers" },
+      ];
+      const RESUMABLE_THRESHOLD = 6 * 1024 * 1024;
+      const SUPABASE_PROJECT_REF = new URL(SUPABASE_URL).hostname.split(".")[0];
+      const SUPABASE_STORAGE_TUS_ENDPOINT =
+        `https://${SUPABASE_PROJECT_REF}.storage.supabase.co/storage/v1/upload/resumable`;
+
+      const { createClient } = window.supabase;
+      const supabaseClient = createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+          },
+        },
+      );
+      const SETTINGS_KEY = "viraasa_admin_settings_v3";
+      let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+      let places = [];
+      let editingPlaceId = null;
+      let importedMediaUrls = {
+        image_url: "",
+        video_en: "",
+        video_gu: "",
+        video_hi: "",
+        audio_en: "",
+        audio_gu: "",
+        audio_hi: "",
+        audio_cover_en: "",
+        audio_cover_gu: "",
+        audio_cover_hi: "",
+      };
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[m],
+        );
+      const makeSlug = (s) =>
+        String(s || "")
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "") || `place-${Date.now()}`;
+      function toast(s) {
+        const t = $("toast");
+        t.textContent = s;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 5000);
+      }
+      function showAuthError(s) {
+        $("authError").textContent = s;
+        $("authError").classList.add("show");
+      }
+      function clearAuthError() {
+        $("authError").classList.remove("show");
+      }
+      async function login(e) {
+        e.preventDefault();
+        clearAuthError();
+        const b = $("loginBtn");
+        b.disabled = true;
+        b.textContent = "LOGGING IN...";
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email: $("loginEmail").value.trim(),
+          password: $("loginPassword").value,
+        });
+        if (error) {
+          showAuthError(error.message);
+          b.disabled = false;
+          b.textContent = "LOGIN";
+          return;
+        }
+        await enterApp();
+        b.disabled = false;
+        b.textContent = "LOGIN";
+      }
+      async function enterApp() {
+        $("authScreen").classList.add("hidden");
+        $("appShell").classList.remove("hidden");
+        await loadSettings();
+        await loadPlaces();
+        stats();
+        render();
+      }
+      async function init() {
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (session?.user) await enterApp();
+        else {
+          $("authScreen").classList.remove("hidden");
+          $("appShell").classList.add("hidden");
+        }
+      }
+      supabaseClient.auth.onAuthStateChange((event) => {
+        if (event === "SIGNED_OUT") {
+          $("authScreen").classList.remove("hidden");
+          $("appShell").classList.add("hidden");
+        }
+      });
+      async function logout() {
+        await supabaseClient.auth.signOut();
+      }
+      async function loadPlaces() {
+        const { data, error } = await supabaseClient
+          .from("heritage_places")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) {
+          toast("Could not load places: " + error.message);
+          return;
+        }
+        places = data || [];
+      }
+      function page(id, btn) {
+        ["dashboard", "places", "editor", "comments", "settings"].forEach((x) =>
+          $(x)?.classList.add("hidden"),
+        );
+        $(id)?.classList.remove("hidden");
+        document
+          .querySelectorAll(".nav button")
+          .forEach((x) => x.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+        if (id === "places") render();
+        if (id === "settings") loadSettings();
+        if (id === "comments") loadAdminComments();
+        stats();
+      }
+      function stats() {
+        $("count").textContent = places.length;
+        $("published").textContent = places.filter((p) => p.active).length;
+        $("media").textContent = places.filter(
+          (p) =>
+            p.image_url ||
+            p.video_en ||
+            p.video_gu ||
+            p.video_hi ||
+            p.audio_en ||
+            p.audio_gu ||
+            p.audio_hi,
+        ).length;
+      }
+      function render() {
+        const q = ($("search")?.value || "").toLowerCase();
+        const a = places.filter((p) =>
+          (
+            p.title_en +
+            " " +
+            (p.title_gu || "") +
+            " " +
+            (p.title_hi || "") +
+            " " +
+            (p.location || "")
+          )
+            .toLowerCase()
+            .includes(q),
+        );
+        $("grid").innerHTML =
+          a
+            .map(
+              (p) =>
+                `<div class="card place"><div class="thumb">${p.image_url ? `<img src="${esc(p.image_url)}" alt="">` : "No image"}</div><div class="placebody"><h3>${esc(p.title_en)}</h3><p>${esc(p.location || "")} · ${p.active ? "Published" : "Draft"} · ${esc(p.slug || "")}</p><div class="actions"><button class="btn secondary" onclick="openEditor('${p.id}')">EDIT</button><button class="btn primary" onclick="openPlaceQR('${p.id}')">QR</button><button class="btn danger" onclick="del('${p.id}')">DELETE</button></div></div></div>`,
+            )
+            .join("") ||
+          '<div class="card" style="grid-column:1/-1;text-align:center;padding:45px">No places found.</div>';
+      }
+      function resetEditor() {
+        [
+          "id",
+          "titleEn",
+          "titleGu",
+          "titleHi",
+          "slugField",
+          "location",
+          "era",
+          "category",
+          "aboutEn",
+          "aboutGu",
+          "aboutHi",
+          "historyEn",
+          "historyGu",
+          "historyHi",
+          "architectureEn",
+          "architectureGu",
+          "architectureHi",
+          "factsEn",
+          "factsGu",
+          "factsHi",
+          "whyEn",
+          "whyGu",
+          "whyHi",
+          "connectionTitleEn",
+          "connectionTitleGu",
+          "connectionTitleHi",
+          "connectionTextEn",
+          "connectionTextGu",
+          "connectionTextHi",
+          "placeLink",
+        ].forEach((id) => ($(id).value = ""));
+        $("active").value = "true";
+        $("qrEnabled").value = "true";
+        $("image").value = "";
+        [
+          "videoEn",
+          "videoGu",
+          "videoHi",
+          "audioEn",
+          "audioGu",
+          "audioHi",
+          "coverEn",
+          "coverGu",
+          "coverHi",
+        ].forEach((id) => ($(id).value = ""));
+        $("jsonImportFile").value = "";
+        $("preview").classList.remove("show");
+        $("preview").removeAttribute("src");
+        $("qrcode").innerHTML = "";
+        setUploadStatus("", null);
+        removedMedia = {};
+        $("saveError").classList.remove("show");
+        $("importReport").classList.remove("show");
+        MEDIA_FIELDS.forEach((f) => { $("chk_" + f.id).textContent = ""; });
+        importedMediaUrls = {
+          image_url: "",
+          video_en: "",
+          video_gu: "",
+          video_hi: "",
+          audio_en: "",
+          audio_gu: "",
+          audio_hi: "",
+          audio_cover_en: "",
+          audio_cover_gu: "",
+          audio_cover_hi: "",
+        };
+      }
+      function fill(id, v) {
+        $(id).value = v ?? "";
+      }
+      function jsonPick(obj, keys, fallback = "") {
+        for (const key of keys) {
+          if (obj && obj[key] !== undefined && obj[key] !== null)
+            return obj[key];
+        }
+        return fallback;
+      }
+      function jsonText(v) {
+        if (v === undefined || v === null) return "";
+        return typeof v === "string" ? v : String(v);
+      }
+      function jsonBool(v, fallback = true) {
+        if (v === undefined || v === null || v === "") return fallback;
+        const x = String(v).trim().toLowerCase();
+        return !(
+          x === "false" ||
+          x === "0" ||
+          x === "draft" ||
+          x === "no" ||
+          x === "off"
+        );
+      }
+      function importPlaceJSON(input) {
+        const file = input?.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            let list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.places) ? parsed.places : [parsed];
+            const data = list[0];
+            if (!data || typeof data !== "object") throw new Error("JSON must contain one place object or a places array.");
+            const norm = (k) => String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
+            const flat = {};
+            const add = (o) => Object.entries(o || {}).forEach(([k, val]) => { flat[norm(k)] = val; });
+            add(data); ["translations", "content", "fields", "data"].forEach((k) => { if (data[k] && typeof data[k] === "object" && !Array.isArray(data[k])) add(data[k]); });
+            const LN = { en: ["en", "english"], gu: ["gu", "gujarati"], hi: ["hi", "hindi"] };
+            const toText = (x) => (x == null ? "" : Array.isArray(x) ? x.map(toText).filter(Boolean).join("\n") : typeof x === "object" ? "" : String(x));
+            const read = (names, lang) => {
+              for (const n of names) {
+                for (const l of LN[lang]) for (const key of [n + l, n + "_" + l]) { const t = toText(flat[norm(key)]).trim(); if (t) return t; }
+                const o = flat[norm(n)];
+                if (o && typeof o === "object" && !Array.isArray(o)) for (const l of LN[lang]) { const t = toText(o[l] ?? o[l.toUpperCase()]).trim(); if (t) return t; }
+                if (lang === "en" && o != null && typeof o !== "object") { const t = toText(o).trim(); if (t) return t; }
+                if (lang === "en" && Array.isArray(o)) { const t = toText(o).trim(); if (t) return t; }
+              }
+              return "";
+            };
+            const SECTIONS = [
+              ["title", ["title", "name", "placename"], "titleEn", "titleGu", "titleHi"],
+              ["about", ["about", "bio", "description", "overview"], "aboutEn", "aboutGu", "aboutHi"],
+              ["history", ["history", "historicalstory", "story"], "historyEn", "historyGu", "historyHi"],
+              ["architecture", ["architecture"], "architectureEn", "architectureGu", "architectureHi"],
+              ["important facts", ["importantfacts", "importantfact", "facts", "keyfacts", "quickfacts"], "factsEn", "factsGu", "factsHi"],
+              ["why it matters", ["whyitmatters", "whymatters", "importance", "why"], "whyEn", "whyGu", "whyHi"],
+              ["connection title", ["connectiontitle", "customtitle", "connectionheading", "sectiontitle"], "connectionTitleEn", "connectionTitleGu", "connectionTitleHi"],
+              ["connection", ["connectiontext", "connectioncontent", "connection", "customtext", "vadnagarheritage", "vadnagar", "sectioncontent"], "connectionTextEn", "connectionTextGu", "connectionTextHi"],
+            ];
+            const filled = [], missing = [];
+            SECTIONS.forEach(([label, names, en, gu, hi]) => {
+              [["en", en], ["gu", gu], ["hi", hi]].forEach(([lang, field]) => {
+                const t = read(names, lang);
+                if (t) { fill(field, t); filled.push(`${label} (${lang.toUpperCase()})`); }
+                else if (!$(field).value.trim()) missing.push(`${label} (${lang.toUpperCase()})`);
+              });
+            });
+            const one = (names, fb = "") => { for (const n of names) { const t = toText(flat[norm(n)]).trim(); if (t) return t; } return fb; };
+            if (!$("titleEn").value.trim()) throw new Error("Place Name (English) is required in the JSON.");
+            const slug = one(["slug"]);
+            if (slug) fill("slugField", slug); else if (!$("slugField").value.trim()) fill("slugField", makeSlug($("titleEn").value));
+            const loc = one(["location", "placelocation"]); if (loc) fill("location", loc);
+            const era = one(["era", "eraperiod", "period"]); if (era) fill("era", era);
+            const cat = one(["category"]); if (cat) fill("category", cat);
+            const act = one(["active", "published", "status"]); if (act) $("active").value = jsonBool(act) ? "true" : "false";
+            const qr = one(["qrenabled"]); if (qr) $("qrEnabled").value = jsonBool(qr) ? "true" : "false";
+            const MEDIA_KEYS = { image_url: ["imageurl", "image", "heroimage"], video_en: ["videoen", "videourlen"], video_gu: ["videogu", "videourlgu"], video_hi: ["videohi", "videourlhi"], audio_en: ["audioen", "audiourlen"], audio_gu: ["audiogu", "audiourlgu"], audio_hi: ["audiohi", "audiourlhi"], audio_cover_en: ["audiocoveren", "coveren"], audio_cover_gu: ["audiocovergu", "covergu"], audio_cover_hi: ["audiocoverhi", "coverhi"] };
+            Object.entries(MEDIA_KEYS).forEach(([col, names]) => { const u = one(names); if (/^https?:/i.test(u)) { importedMediaUrls[col] = u; delete removedMedia[col]; } });
+            if (importedMediaUrls.image_url) { $("preview").src = importedMediaUrls.image_url; $("preview").classList.add("show"); }
+            updatePlaceLink($("slugField").value.trim());
+            renderCurrentMedia();
+            const rep = $("importReport");
+            rep.textContent = `Imported ${filled.length} text field(s) from the file.` + (missing.length ? `\nNot found in the file (left empty): ${missing.join(", ")}` : "\nAll text sections found ✓") + (list.length > 1 ? `\nNote: the file contains ${list.length} places — this form imports the first one only.` : "") + "\nReview the fields below, then press SAVE PLACE.";
+            rep.classList.add("show");
+            toast("JSON imported. Review the fields, then SAVE PLACE.");
+          } catch (err) {
+            console.error(err);
+            toast("JSON import failed: " + (err.message || err));
+          } finally { input.value = ""; }
+        };
+        reader.onerror = () => { toast("Could not read the JSON file."); input.value = ""; };
+        reader.readAsText(file);
+      }
+      function downloadJSONTemplate() {
+        const template = {
+          title_en: "Kirti Toran",
+          title_gu: "કીર્તિ તોરણ",
+          title_hi: "कीर्ति तोरण",
+          slug: "kirti-toran",
+          location: "Vadnagar, Gujarat",
+          era: "12th Century CE — Solanki Period",
+          category: "Architecture",
+          active: true,
+          qr_enabled: true,
+          about_en: "",
+          about_gu: "",
+          about_hi: "",
+          history_en: "",
+          history_gu: "",
+          history_hi: "",
+          architecture_en: "",
+          architecture_gu: "",
+          architecture_hi: "",
+          important_facts_en: "",
+          important_facts_gu: "",
+          important_facts_hi: "",
+          why_it_matters_en: "",
+          why_it_matters_gu: "",
+          why_it_matters_hi: "",
+          connection_title_en: "",
+          connection_title_gu: "",
+          connection_title_hi: "",
+          connection_text_en: "",
+          connection_text_gu: "",
+          connection_text_hi: "",
+          image_url: "",
+          video_en: "",
+          video_gu: "",
+          video_hi: "",
+          audio_en: "",
+          audio_gu: "",
+          audio_hi: "",
+          audio_cover_en: "",
+          audio_cover_gu: "",
+          audio_cover_hi: "",
+        };
+        const blob = new Blob([JSON.stringify(template, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "viraasa-place-template.json";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+      function openEditor(id) {
+        page("editor");
+        resetEditor();
+        editingPlaceId = id || null;
+        $("id").value = id || "";
+        $("editorHeading").textContent = id
+          ? "Edit Heritage Place"
+          : "Add New Place";
+        if (!id) {
+          fill("slugField", "");
+          renderCurrentMedia();
+          return;
+        }
+        const p = places.find((x) => x.id === id);
+        if (!p) return;
+        const map = {
+          titleEn: "title_en",
+          titleGu: "title_gu",
+          titleHi: "title_hi",
+          slugField: "slug",
+          location: "location",
+          era: "era",
+          category: "category",
+          active: "active",
+          qrEnabled: "qr_enabled",
+          aboutEn: "about_en",
+          aboutGu: "about_gu",
+          aboutHi: "about_hi",
+          historyEn: "history_en",
+          historyGu: "history_gu",
+          historyHi: "history_hi",
+          architectureEn: "architecture_en",
+          architectureGu: "architecture_gu",
+          architectureHi: "architecture_hi",
+          factsEn: "important_facts_en",
+          factsGu: "important_facts_gu",
+          factsHi: "important_facts_hi",
+          whyEn: "why_it_matters_en",
+          whyGu: "why_it_matters_gu",
+          whyHi: "why_it_matters_hi",
+          connectionTitleEn: "connection_title_en",
+          connectionTitleGu: "connection_title_gu",
+          connectionTitleHi: "connection_title_hi",
+          connectionTextEn: "connection_text_en",
+          connectionTextGu: "connection_text_gu",
+          connectionTextHi: "connection_text_hi",
+        };
+        Object.entries(map).forEach(([a, b]) => fill(a, p[b]));
+        if (p.image_url) {
+          $("preview").src = p.image_url;
+          $("preview").classList.add("show");
+        }
+        updatePlaceLink(p.slug);
+        renderCurrentMedia();
+      }
+      function imagePreview(input) {
+        const f = input.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = (e) => {
+          $("preview").src = e.target.result;
+          $("preview").classList.add("show");
+        };
+        r.readAsDataURL(f);
+      }
+      function setUploadStatus(message, percent = null) {
+        const box = $("uploadStatus");
+        const wrap = $("uploadProgress");
+        const bar = $("uploadProgressBar");
+        if (box) {
+          box.textContent = message || "";
+          box.classList.toggle("show", !!message);
+        }
+        if (wrap) wrap.classList.toggle("show", percent !== null);
+        if (bar && percent !== null)
+          bar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+      }
+
+      function encodeTusMetadata(value) {
+        return btoa(unescape(encodeURIComponent(String(value || ""))));
+      }
+
+      function formatBytes(bytes) {
+        if (!Number.isFinite(bytes)) return "unknown size";
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      }
+
+      function getMediaDuration(file) {
+        return new Promise((resolve) => {
+          const tag = file.type.startsWith("video/") ? "video" : "audio";
+          const el = document.createElement(tag);
+          const url = URL.createObjectURL(file);
+          let finished = false;
+          const done = (duration, ok) => { if (finished) return; finished = true; clearTimeout(timer); URL.revokeObjectURL(url); el.remove(); resolve({ duration: Number.isFinite(duration) ? duration : 0, ok }); };
+          const timer = setTimeout(() => done(0, false), 15000);
+          el.preload = "metadata";
+          el.onloadedmetadata = () => done(el.duration || 0, true);
+          el.onerror = () => done(0, false);
+          el.src = url;
+        });
+      }
+
+      async function validateMediaFile(file, kind) {
+        if (!file) return null;
+        const fmtT = (sec) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`;
+        if (kind === "image") {
+          if (!file.type.startsWith("image/")) throw new Error(`${file.name}: this field needs an image (JPG / PNG / WebP).`);
+          if (file.size > MAX_IMAGE_BYTES) throw new Error(`${file.name} is ${formatBytes(file.size)}. Images must be under ${formatBytes(MAX_IMAGE_BYTES)} — please reduce the image size.`);
+          return { size: file.size, duration: 0, warn: "" };
+        }
+        const isVideo = kind === "video";
+        if (!file.type.startsWith(isVideo ? "video/" : "audio/")) throw new Error(`${file.name}: this field needs a${isVideo ? " video" : "n audio"} file.`);
+        const maxBytes = isVideo ? MAX_VIDEO_BYTES : MAX_AUDIO_BYTES;
+        const maxSeconds = isVideo ? MAX_VIDEO_SECONDS : MAX_AUDIO_SECONDS;
+        const meta = await getMediaDuration(file);
+        const d = meta.duration;
+        if (file.size > maxBytes) {
+          let tip = "";
+          if (d > 0) {
+            const kbps = Math.floor((maxBytes * 8 * 0.92) / d / 1000);
+            tip = isVideo
+              ? ` For this ${fmtT(d)} video, export/compress it to about ${Math.max(kbps - 128, 300)} kbps video + 128 kbps audio (MP4, H.264, 720p) and it will fit.`
+              : ` Export it as MP3 at 96–128 kbps and it will be about ${(d * 12 / 1024).toFixed(1)} MB.`;
+          }
+          throw new Error(`${file.name} is ${formatBytes(file.size)} — the maximum is ${formatBytes(maxBytes)}.${tip}`);
+        }
+        if (!meta.ok) throw new Error(`${file.name}: this browser cannot read the file${isVideo ? " (iPhone HEVC / .mov / .mkv files often fail). Convert it to MP4 with H.264 video + AAC audio, then upload again." : ". Please use MP3, M4A/AAC or WAV."}`);
+        if (d > maxSeconds + 0.5) throw new Error(`${file.name} is ${fmtT(d)} long — the maximum is ${fmtT(maxSeconds)}. Please trim it first.`);
+        const warn = isVideo && !/mp4|webm/.test(file.type) ? "This is not an MP4 file. MP4 (H.264 + AAC) is the only format guaranteed to play on every phone." : "";
+        return { size: file.size, duration: d, warn };
+      }
+
+      async function uploadMediaStandard(file, bucket, folder) {
+        const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+        const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+        const { error } = await supabaseClient.storage
+          .from(bucket)
+          .upload(path, file, {
+            upsert: false,
+            cacheControl: "3600",
+            contentType: file.type || "application/octet-stream",
+          });
+        if (error) throw error;
+        return {
+          url: supabaseClient.storage.from(bucket).getPublicUrl(path).data.publicUrl,
+          bucket,
+          path,
+        };
+      }
+
+      async function uploadMediaResumable(file, bucket, folder) {
+        if (!window.tus?.Upload) throw new Error("Resumable upload library could not be loaded.");
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session?.access_token) throw new Error("Your admin session expired. Please log in again.");
+        const ext = (file.name.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+        return new Promise((resolve, reject) => {
+          // NOTE: no "resume previous upload" here. A resumed upload goes to the OLD object path while the
+          // saved URL points to the NEW path -> the website would show a dead link.
+          const upload = new tus.Upload(file, {
+            endpoint: SUPABASE_STORAGE_TUS_ENDPOINT,
+            retryDelays: [0, 3000, 5000, 10000, 20000],
+            headers: { authorization: `Bearer ${session.access_token}`, apikey: SUPABASE_PUBLISHABLE_KEY, "x-upsert": "false" },
+            metadata: { bucketName: encodeTusMetadata(bucket), objectName: encodeTusMetadata(path), contentType: encodeTusMetadata(file.type || "application/octet-stream"), cacheControl: encodeTusMetadata("3600") },
+            chunkSize: 6 * 1024 * 1024,
+            uploadDataDuringCreation: true,
+            removeFingerprintOnSuccess: true,
+            onError(error) { reject(new Error(`${error?.message || error} ${error?.originalResponse?.getBody?.() || ""}`)); },
+            onProgress(done, total) { const pct = total ? (done / total) * 100 : 0; setUploadStatus(`Uploading ${file.name} — ${pct.toFixed(0)}%  (${formatBytes(done)} of ${formatBytes(total)})`, pct); },
+            onSuccess() { resolve({ url: supabaseClient.storage.from(bucket).getPublicUrl(path).data.publicUrl, bucket, path }); },
+          });
+          upload.start();
+        });
+      }
+
+      async function uploadMedia(file, bucket, folder) {
+        if (!file) return null;
+        let result = null, lastErr = null;
+        const attempts = file.size > RESUMABLE_THRESHOLD ? [uploadMediaResumable, uploadMediaStandard] : [uploadMediaStandard, uploadMediaStandard];
+        for (let i = 0; i < attempts.length && !result; i++) {
+          try {
+            if (i === 1) setUploadStatus(`Retrying ${file.name} with the standard uploader…`, null);
+            result = await attempts[i](file, bucket, folder);
+          } catch (err) {
+            lastErr = err;
+            if (explainStorageError(err, bucket, file).fatal) break;      // retrying cannot fix size / permission / type problems
+          }
+        }
+        if (!result) { setUploadStatus(`Upload failed: ${file.name}`, null); throw new Error(`${file.name}\n${explainStorageError(lastErr, bucket, file).text}`); }
+        try {
+          const r = await fetch(result.url, { method: "HEAD", cache: "no-store" });
+          if ([400, 403, 404].includes(r.status)) throw new Error("NOT_PUBLIC");
+        } catch (e) {
+          if (e.message === "NOT_PUBLIC") throw new Error(`${file.name}\nUploaded, but visitors cannot open it: the "${bucket}" bucket is not PUBLIC. In Supabase → Storage → ${bucket} → Edit bucket → turn on "Public bucket".`);
+        }
+        setUploadStatus(`Uploaded ${file.name}`, 100);
+        return result;
+      }
+function explainStorageError(err, bucket, file) {
+        const raw = String(err?.message || err || "");
+        const m = raw.toLowerCase();
+        if (/maximum allowed size|payload too large|too large|\b413\b|exceeded/.test(m)) return { fatal: true, text: `Supabase refused it because the file is bigger than your storage limit (Supabase Free plan: 50 MB per file; a smaller limit may be set on the "${bucket}" bucket). Compress the file, or raise the limit in Supabase → Storage → Settings.` };
+        if (/mime|not supported|invalid_mime|unsupported/.test(m)) return { fatal: true, text: `The "${bucket}" bucket does not accept this file type. In Supabase → Storage → ${bucket} → Edit bucket, clear "Allowed MIME types" (or run the VIRAASA_SUPABASE_SETUP.sql script).` };
+        if (/row-level security|row level|violates|unauthori[sz]ed|forbidden|\b40[13]\b|jwt|permission/.test(m)) return { fatal: true, text: `Supabase blocked this action (permissions). Log out and log in again; if it continues, the storage policies are missing — run VIRAASA_SUPABASE_SETUP.sql.` };
+        if (/bucket not found|\b404\b/.test(m)) return { fatal: true, text: `The storage bucket "${bucket}" does not exist. Create it in Supabase → Storage (Public bucket) or run VIRAASA_SUPABASE_SETUP.sql.` };
+        if (/network|failed to fetch|timeout|offline|load failed/.test(m)) return { fatal: false, text: "The internet connection dropped during the upload. Keep this tab open, check the connection and press SAVE PLACE again." };
+        return { fatal: false, text: raw || "Unknown upload error." };
+      }
+function showSaveError(msg) { const b = $("saveError"); b.textContent = msg; b.classList.add("show"); b.scrollIntoView({ behavior: "smooth", block: "center" }); }
+
+      async function removeUploadedMedia(items) {
+        const grouped = {};
+        for (const item of items || []) {
+          if (!item?.bucket || !item?.path) continue;
+          grouped[item.bucket] ||= [];
+          grouped[item.bucket].push(item.path);
+        }
+        for (const [bucket, paths] of Object.entries(grouped)) {
+          try {
+            await supabaseClient.storage.from(bucket).remove(paths);
+          } catch (e) {
+            console.warn("Could not clean up orphaned media:", e);
+          }
+        }
+      }
+
+      async function save(e) {
+        e.preventDefault();
+        $("saveError").classList.remove("show");
+        let old = places.find((p) => p.id === $("id").value);
+        let id = $("id").value || null;
+        const saveBtn = e.submitter;
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = "SAVING..."; }
+        uploading = true;
+        const uploaded = [];
+        try {
+          const slug = $("slugField").value.trim() || makeSlug($("titleEn").value);
+          const v = (i) => $(i).value;
+          const p = {
+            slug, title_en: v("titleEn").trim(), title_gu: v("titleGu").trim(), title_hi: v("titleHi").trim(),
+            location: v("location").trim(), era: v("era").trim(), category: v("category").trim() || "Heritage",
+            active: v("active") === "true", qr_enabled: v("qrEnabled") === "true",
+            about_en: v("aboutEn"), about_gu: v("aboutGu"), about_hi: v("aboutHi"),
+            history_en: v("historyEn"), history_gu: v("historyGu"), history_hi: v("historyHi"),
+            architecture_en: v("architectureEn"), architecture_gu: v("architectureGu"), architecture_hi: v("architectureHi"),
+            important_facts_en: v("factsEn"), important_facts_gu: v("factsGu"), important_facts_hi: v("factsHi"),
+            why_it_matters_en: v("whyEn"), why_it_matters_gu: v("whyGu"), why_it_matters_hi: v("whyHi"),
+            connection_title_en: v("connectionTitleEn"), connection_title_gu: v("connectionTitleGu"), connection_title_hi: v("connectionTitleHi"),
+            connection_text_en: v("connectionTextEn"), connection_text_gu: v("connectionTextGu"), connection_text_hi: v("connectionTextHi"),
+          };
+          // 1) check EVERY chosen file first, so all problems are shown together before any upload starts
+          const picked = MEDIA_FIELDS.filter((f) => $(f.id).files[0]);
+          const problems = [];
+          for (const f of picked) { try { await validateMediaFile($(f.id).files[0], f.kind); } catch (err) { problems.push(`• ${err.message}`); } }
+          if (problems.length) throw new Error("Please fix these files first (nothing was uploaded):\n" + problems.join("\n"));
+          // 2) upload
+          const folder = id || slug;
+          let n = 0;
+          for (const f of picked) {
+            n++;
+            const file = $(f.id).files[0];
+            setUploadStatus(`(${n}/${picked.length}) Uploading ${f.label}: ${file.name}…`, 0);
+            const r = await uploadMedia(file, f.bucket, f.folder ? `${folder}/${f.folder}` : folder);
+            uploaded.push({ ...r, col: f.col, inputId: f.id });
+            importedMediaUrls[f.col] = r.url;            // remembered: a later retry never uploads this file again
+            delete removedMedia[f.col];
+          }
+          MEDIA_FIELDS.forEach((f) => { p[f.col] = removedMedia[f.col] ? null : importedMediaUrls[f.col] || old?.[f.col] || null; });
+          // 3) database
+          if (!old && slug) { const existing = places.find((x) => x.slug === slug); if (existing) { old = existing; id = existing.id; $("id").value = existing.id; } }
+          const replaced = MEDIA_FIELDS.map((f) => old?.[f.col]).filter((u) => u && !Object.values(p).includes(u));
+          if (old) {
+            const { error } = await supabaseClient.from("heritage_places").update(p).eq("id", id);
+            if (error) throw error;
+          } else {
+            const { data, error } = await supabaseClient.from("heritage_places").insert(p).select("id").single();
+            if (error) throw error;
+            id = data.id; $("id").value = id;
+          }
+          await loadPlaces();
+          removeUnusedStorageFiles(replaced);
+          stats(); render(); updatePlaceLink(slug);
+          setUploadStatus("Saved ✓", 100);
+          toast("Place saved successfully");
+          page("places", document.querySelectorAll(".nav button")[1]);
+        } catch (err) {
+          console.error(err);
+          uploaded.forEach((u) => { const i = $(u.inputId); if (i) i.value = ""; });
+          let msg = String(err?.message || err);
+          if (!msg.startsWith("Please fix") && !msg.includes("\n")) msg = "Save failed: " + explainStorageError(err, "", {}).text;
+          if (uploaded.length) msg += `\n\n✓ ${uploaded.length} file(s) were already uploaded and are kept — just fix the problem and press SAVE PLACE again (no need to choose those files again).`;
+          showSaveError(msg);
+          renderCurrentMedia();
+          toast("Save failed — see the red message");
+        } finally {
+          uploading = false;
+          if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = "SAVE PLACE"; }
+        }
+      }
+      async function del(id) {
+        if (!confirm("Delete this place?")) return;
+        const { error } = await supabaseClient
+          .from("heritage_places")
+          .delete()
+          .eq("id", id);
+        if (error) return toast("Delete failed: " + error.message);
+        await loadPlaces();
+        stats();
+        render();
+        toast("Place deleted");
+      }
+      function getCustomerBase() {
+        return (settings.customerBase || "").trim().replace(/\/+$/, "");
+      }
+      function buildPlaceLink(slug) {
+        const base = getCustomerBase();
+        return base && slug ? `${base}/?place=${encodeURIComponent(slug)}` : "";
+      }
+      function updatePlaceLink(slug) {
+        const link = buildPlaceLink(slug);
+        $("placeLink").value = link;
+        $("qrcode").innerHTML = "";
+        if (link && window.QRCode)
+          new QRCode($("qrcode"), {
+            text: link,
+            width: 180,
+            height: 180,
+            colorDark: "#4A2C1A",
+            colorLight: "#FFFDF8",
+          });
+      }
+      function openPlaceQR(id) {
+        const p = places.find((x) => x.id === id);
+        if (!p) return;
+        openEditor(id);
+        setTimeout(() => updatePlaceLink(p.slug), 50);
+      }
+      async function copyPlaceLink() {
+        const v = $("placeLink").value;
+        if (!v) return toast("Save the place first.");
+        try {
+          await navigator.clipboard.writeText(v);
+          toast("Link copied");
+        } catch {
+          toast("Copy failed");
+        }
+      }
+      function openPlaceLink() {
+        const v = $("placeLink").value;
+        if (v) window.open(v, "_blank", "noopener");
+      }
+      function downloadQR() {
+        const q = $("qrcode"),
+          canvas = q?.querySelector("canvas"),
+          img = q?.querySelector("img");
+        if (!canvas && !img) return toast("Generate the QR first");
+        const a = document.createElement("a");
+        a.download = `${$("slugField").value || "viraasa-place"}-qr.png`;
+        a.href = canvas ? canvas.toDataURL("image/png") : img.src;
+        a.click();
+      }
+      async function loadSettings() {
+        settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        $("customerBase").value =
+          settings.customerBase || "https://viraasa.netlify.app";
+        $("sburl").value = SUPABASE_URL;
+        $("sbkey").value = SUPABASE_PUBLISHABLE_KEY;
+        $("sbkey").type = "password";
+        $("connectionStatus").textContent = "Connected to Supabase";
+        applyLimits();
+        $("limVideoMB").value = MAX_VIDEO_BYTES / 1048576;
+        $("limVideoMin").value = MAX_VIDEO_SECONDS / 60;
+        $("limAudioMB").value = MAX_AUDIO_BYTES / 1048576;
+        $("limAudioMin").value = MAX_AUDIO_SECONDS / 60;
+      }
+      async function saveSettings() {
+        settings.customerBase = $("customerBase").value.trim();
+        const num = (id, d) => Math.max(1, Number($(id).value) || d);
+        settings.limits = { vMB: num("limVideoMB", 50), vMin: num("limVideoMin", 3), aMB: num("limAudioMB", 25), aMin: num("limAudioMin", 10) };
+        applyLimits();
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        if ($("slugField")?.value) updatePlaceLink($("slugField").value);
+        toast("Settings saved");
+      }
+      async function loadAdminComments() {
+        const f = $("commentPlaceFilter");
+        if (f) {
+          f.innerHTML =
+            '<option value="">All places</option>' +
+            places
+              .map((p) => `<option value="${p.id}">${esc(p.title_en)}</option>`)
+              .join("");
+        }
+        const place = f?.value || "";
+        let q = `select=id,user_id,place_id,comment,rating,created_at,profiles(display_name),heritage_places(title_en)&order=created_at.desc&limit=200`;
+        if (place) q += `&place_id=eq.${encodeURIComponent(place)}`;
+        try {
+          const rows = await supabaseClient
+            .from("comments")
+            .select(
+              "id,user_id,place_id,comment,rating,created_at,profiles(display_name),heritage_places(title_en)",
+            )
+            .order("created_at", { ascending: false })
+            .limit(200);
+          if (rows.error) throw rows.error;
+          if (place) rows.data = (rows.data || []).filter((c) => c.place_id === place);
+          $("adminCommentsList").innerHTML =
+            (rows.data || [])
+              .map(
+                (c) =>
+                  `<div class="card" style="margin-top:12px"><b>${esc(c.profiles?.display_name || "Visitor")}</b> · ${esc(c.heritage_places?.title_en || "")}<div class="sub">${new Date(c.created_at).toLocaleString()}</div><p style="margin:10px 0">${esc(c.comment)}</p><button class="btn danger" onclick="adminDeleteComment('${c.id}')">DELETE</button></div>`,
+              )
+              .join("") ||
+            '<div class="sub" style="padding:20px">No comments.</div>';
+        } catch (e) {
+          $("adminCommentsList").innerHTML =
+            '<div class="sub">Comments could not be loaded. Run the admin policy migration first.</div>';
+        }
+      }
+      async function adminDeleteComment(id) {
+        if (!confirm("Delete this comment?")) return;
+        const { error } = await supabaseClient
+          .from("comments")
+          .delete()
+          .eq("id", id);
+        if (error) return toast("Delete failed: " + error.message);
+        loadAdminComments();
+        toast("Comment deleted");
+      }
+
+      function applyLimits() {
+        const L = settings.limits || {};
+        MAX_VIDEO_BYTES = (L.vMB || 50) * 1048576; MAX_VIDEO_SECONDS = (L.vMin || 3) * 60;
+        MAX_AUDIO_BYTES = (L.aMB || 25) * 1048576; MAX_AUDIO_SECONDS = (L.aMin || 10) * 60;
+        const vMB = MAX_VIDEO_BYTES / 1048576, vMin = MAX_VIDEO_SECONDS / 60, aMB = MAX_AUDIO_BYTES / 1048576, aMin = MAX_AUDIO_SECONDS / 60;
+        const kbps = Math.floor((MAX_VIDEO_BYTES * 8 * 0.92) / MAX_VIDEO_SECONDS / 1000);
+        const html = `<b class="big">UPLOAD LIMITS — please read before uploading</b><br>
+          🎬 <b>Video: max ${vMB} MB and max ${vMin} minutes</b> per file (MP4 · H.264 video + AAC audio · 720p).<br>
+          🎧 <b>Audio: max ${aMB} MB and max ${aMin} minutes</b> per file (MP3 / M4A recommended; WAV works but is ~6× bigger).<br>
+          🖼 <b>Images: max 10 MB</b> (JPG / PNG / WebP).<br>
+          💡 A full ${vMin}-minute video must be compressed to roughly <b>${kbps - 128} kbps video + 128 kbps audio</b> to stay under ${vMB} MB (free tools: HandBrake → "Fast 720p30", or ffmpeg: <code>-vf scale=1280:-2 -crf 26 -maxrate ${kbps - 128}k -bufsize ${2 * (kbps - 128)}k</code>).<br>
+          ⏳ Wait until the progress bar reaches 100% and "Place saved" appears. Do not close this tab while uploading.`;
+        ["limitBox", "limitBoxSettings"].forEach((i) => { if ($(i)) $(i).innerHTML = html; });
+        document.querySelectorAll("[data-hint]").forEach((e) => {
+          const k = e.dataset.hint;
+          e.textContent = k === "video" ? `(max ${vMB} MB · ${vMin} min · MP4)` : k === "audio" ? `(max ${aMB} MB · ${aMin} min · MP3)` : "(max 10 MB)";
+        });
+      }
+      async function checkPicked(input) {
+        const out = $("chk_" + input.id), f = MEDIA_FIELDS.find((x) => x.id === input.id), file = input.files[0];
+        if (!out || !f) return;
+        out.className = "filecheck";
+        if (!file) { out.textContent = ""; return; }
+        out.textContent = "Checking…";
+        try {
+          const r = await validateMediaFile(file, f.kind);
+          const t = r.duration ? ` · ${Math.floor(r.duration / 60)}:${String(Math.round(r.duration % 60)).padStart(2, "0")}` : "";
+          out.className = "filecheck " + (r.warn ? "warn" : "ok");
+          out.textContent = `✓ ${file.name} — ${formatBytes(r.size)}${t} — OK, will upload when you press SAVE PLACE.` + (r.warn ? `\n⚠ ${r.warn}` : "");
+        } catch (err) { out.className = "filecheck bad"; out.textContent = "✗ " + err.message; }
+      }
+      function renderCurrentMedia() {
+        const old = places.find((p) => p.id === $("id").value);
+        MEDIA_FIELDS.forEach((f) => {
+          const box = $("cur_" + f.id); if (!box) return;
+          const url = removedMedia[f.col] ? "" : importedMediaUrls[f.col] || old?.[f.col] || "";
+          if (!url) { box.innerHTML = `<span>No ${f.label} yet.</span>`; return; }
+          const player = f.kind === "video" ? `<video controls preload="metadata" src="${esc(url)}"></video>` : f.kind === "audio" ? `<audio controls preload="metadata" src="${esc(url)}"></audio>` : `<a href="${esc(url)}" target="_blank" rel="noopener">view image</a>`;
+          box.innerHTML = `<span>✓ Current ${f.label}:</span>${player}<button type="button" class="btn danger mini" onclick="removeMedia('${f.col}')">REMOVE</button>`;
+        });
+      }
+      function removeMedia(col) {
+        if (!confirm("Remove this file from the place? (It is deleted from storage when you press SAVE PLACE.)")) return;
+        removedMedia[col] = true; importedMediaUrls[col] = ""; renderCurrentMedia();
+        if (col === "image_url") $("preview").classList.remove("show");
+      }
+      function storagePathFromUrl(u) {
+        const m = String(u || "").match(/\/storage\/v1\/object\/public\/([^/]+)\/(.+?)(?:\?.*)?$/);
+        return u.startsWith(SUPABASE_URL) && m ? { bucket: m[1], path: decodeURIComponent(m[2]) } : null;
+      }
+      async function removeUnusedStorageFiles(urls) {
+        // frees the 1 GB Supabase space when a file is replaced/removed — never deletes a file another place still uses
+        const inUse = new Set(places.flatMap((p) => MEDIA_FIELDS.map((f) => p[f.col]).filter(Boolean)));
+        const items = [...new Set(urls)].filter((u) => !inUse.has(u)).map(storagePathFromUrl).filter(Boolean);
+        await removeUploadedMedia(items);
+      }
+      async function runStorageCheck() {
+        const out = $("storageCheckResult"); out.className = "filecheck"; out.textContent = "Testing…";
+        const png = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="), (c) => c.charCodeAt(0));
+        const wav = new Uint8Array([82,73,70,70,36,0,0,0,87,65,86,69,102,109,116,32,16,0,0,0,1,0,1,0,64,31,0,0,128,62,0,0,2,0,16,0,100,97,116,97,0,0,0,0]);
+        const tests = [["images", "image/png", "png", png], ["videos", "video/mp4", "mp4", new Uint8Array(64)], ["videos", "video/webm", "webm", new Uint8Array(64)], ["audio", "audio/wav", "wav", wav], ["audio", "audio/mpeg", "mp3", new Uint8Array(64)], ["audio", "audio/mp4", "m4a", new Uint8Array(64)]];
+        const lines = [];
+        for (const [bucket, type, ext, bytes] of tests) {
+          const path = `__check/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+          const { error } = await supabaseClient.storage.from(bucket).upload(path, new Blob([bytes], { type }), { contentType: type });
+          if (error) { lines.push(`✗ ${bucket} · ${type}: ${explainStorageError(error, bucket, {}).text}`); continue; }
+          let pub = "public ✓";
+          try { const r = await fetch(supabaseClient.storage.from(bucket).getPublicUrl(path).data.publicUrl, { method: "HEAD", cache: "no-store" }); if (!r.ok) pub = "NOT PUBLIC ✗ (turn on 'Public bucket')"; } catch {}
+          await supabaseClient.storage.from(bucket).remove([path]);
+          lines.push(`✓ ${bucket} · ${type}: upload OK, ${pub}`);
+        }
+        out.textContent = lines.join("\n") + "\n\nNote: Supabase Free allows max 50 MB per file; if a bucket has a smaller limit the real upload will say so.";
+        out.className = "filecheck " + (lines.some((l) => l.startsWith("✗")) ? "bad" : "ok");
+      }
+      window.addEventListener("beforeunload", (e) => { if (uploading) { e.preventDefault(); e.returnValue = ""; } });
+      applyLimits();
+      init();
+    </script>
+  </body>
+</html>
