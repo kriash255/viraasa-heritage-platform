@@ -1,0 +1,2182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>VIRAASA Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+      :root {
+        --bg: #f5efe4;
+        --card: #fffdf8;
+        --text: #241a14;
+        --muted: #705f50;
+        --line: #d8c6aa;
+        --gold: #b08a52;
+        --gold2: #98733e;
+        --deep: #4a2c1a;
+        --warm: #8a6240;
+        --red: #a83d32;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .app {
+        min-height: 100vh;
+        display: flex;
+      }
+      .side {
+        width: 240px;
+        background: var(--deep);
+        color: #fff;
+        padding: 24px 15px;
+        position: fixed;
+        inset: 0 auto 0 0;
+        border-right: 2px solid var(--gold);
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        padding: 5px 12px 28px;
+      }
+      .logo span {
+        color: var(--gold);
+      }
+      .nav button {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: #eadfce;
+        text-align: left;
+        padding: 13px 14px;
+        border-radius: 9px;
+        margin: 3px 0;
+        cursor: pointer;
+      }
+      .nav button.active,
+      .nav button:hover {
+        background: var(--gold);
+        color: #241a14;
+      }
+      .main {
+        margin-left: 240px;
+        width: calc(100% - 240px);
+        padding: 28px;
+        background: var(--bg);
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 22px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 18px rgba(74, 44, 26, 0.08);
+      }
+      .btn {
+        border: 0;
+        border-radius: 9px;
+        padding: 11px 15px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .primary {
+        background: var(--deep);
+        color: #f5efe4;
+        border: 1px solid var(--gold);
+      }
+      .primary:hover {
+        background: var(--gold2);
+      }
+      .secondary {
+        background: #fffdf8;
+        border: 1px solid var(--gold);
+        color: var(--deep);
+      }
+      .danger {
+        background: #fff0ed;
+        color: var(--red);
+        border: 1px solid #e7b6ad;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 18px;
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .stat b {
+        display: block;
+        font-size: 28px;
+        margin-top: 5px;
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .search,
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 1px solid #cdbb9f;
+        border-radius: 9px;
+        padding: 11px;
+        background: #fffdf8;
+        color: var(--text);
+        font: inherit;
+      }
+      textarea {
+        min-height: 130px;
+        resize: vertical;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+      .place {
+        padding: 0;
+        overflow: hidden;
+      }
+      .thumb {
+        height: 155px;
+        background: #e9ddca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        overflow: hidden;
+      }
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .placebody {
+        padding: 15px;
+      }
+      .placebody h3 {
+        margin: 0 0 6px;
+      }
+      .placebody p {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0 0 12px;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .actions .btn {
+        padding: 8px 11px;
+        font-size: 12px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .editor-tools {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+      }
+      .editor-tools .btn {
+        white-space: nowrap;
+      }
+      .formgrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+      .full {
+        grid-column: 1/-1;
+      }
+      label {
+        font-size: 13px;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 7px;
+      }
+      .filebox {
+        border: 1px dashed #b7c3d3;
+        border-radius: 9px;
+        padding: 12px;
+      }
+      .preview {
+        display: none;
+        max-width: 100%;
+        max-height: 160px;
+        margin-top: 10px;
+        border-radius: 7px;
+      }
+      .preview.show {
+        display: block;
+      }
+      .notice {
+        background: #eee2cf;
+        color: #4a2c1a;
+        padding: 12px 14px;
+        border-radius: 9px;
+        font-size: 13px;
+        margin-bottom: 15px;
+        border: 1px solid #d8c6aa;
+      }
+      .toast {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        background: #172033;
+        color: #fff;
+        padding: 13px 17px;
+        border-radius: 9px;
+        display: none;
+      }
+      .toast.show {
+        display: block;
+      }
+      .upload-progress { margin-top: 10px; height: 8px; background: #eadfce; border-radius: 999px; overflow: hidden; display: none; }
+      .upload-progress.show { display: block; }
+      .upload-progress > div { height: 100%; width: 0%; background: var(--gold); transition: width .15s ease; }
+      .upload-status { margin-top: 6px; color: var(--muted); font-size: 12px; display: none; }
+      .upload-status.show { display: block; }
+      .upload-status.err { color: #b3261e; font-weight: 600; background: #fdecea; border: 1px solid #f3c1bc; padding: 10px 12px; border-radius: 10px; font-size: 13px; }
+      .upload-status.okmsg { color: #2e7d32; font-weight: 600; }
+      .fileinfo { font-size: 12px; margin-top: 6px; color: var(--muted); }
+      .fileinfo.ok { color: #2e7d32; }
+      .fileinfo.bad { color: #b3261e; font-weight: 600; }
+      .fileinfo.warn { color: #9a6700; }
+      .urlbox { margin-top: 8px; }
+      .rules b { color: #4a2c1a; }
+      .rules code { display: block; background: #fffdf8; border: 1px solid #eadfce; border-radius: 8px; padding: 8px 10px; margin: 6px 0; font-size: 11.5px; overflow-x: auto; white-space: pre; }
+      .checkrow { padding: 8px 0; border-bottom: 1px solid #eadfce; font-size: 13px; }
+      .checkrow.ok::before { content: "✓ "; color: #2e7d32; font-weight: 700; }
+      .checkrow.bad::before { content: "✗ "; color: #b3261e; font-weight: 700; }
+      .auth-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--bg);
+      }
+      .auth-card {
+        width: min(430px, 100%);
+      }
+      .auth-logo {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: 4px;
+        margin-bottom: 8px;
+      }
+      .auth-logo span {
+        color: var(--gold);
+      }
+      .auth-error {
+        display: none;
+        background: #fff0ed;
+        color: var(--red);
+        border: 1px solid #e7b6ad;
+        border-radius: 9px;
+        padding: 10px 12px;
+        font-size: 13px;
+        margin-bottom: 14px;
+      }
+      .auth-error.show {
+        display: block;
+      }
+      .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #6b8e23;
+        margin-right: 7px;
+      }
+      @media (max-width: 850px) {
+        .side {
+          width: 200px;
+        }
+        .main {
+          margin-left: 200px;
+          width: calc(100% - 200px);
+        }
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .app {
+          display: block;
+        }
+        .side {
+          position: static;
+          width: 100%;
+          height: auto;
+        }
+        .main {
+          margin: 0;
+          width: 100%;
+          padding: 17px;
+        }
+        .grid,
+        .stats,
+        .formgrid {
+          grid-template-columns: 1fr;
+        }
+        .editor-tools {
+          justify-content: flex-start;
+        }
+        .full {
+          grid-column: auto;
+        }
+        .top {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="authScreen" class="auth-wrap">
+      <div class="card auth-card">
+        <div class="auth-logo">VIR<span>A</span>ASA</div>
+        <h1 style="margin: 0 0 6px">Admin Login</h1>
+        <div class="sub" style="margin-bottom: 20px">
+          Sign in to manage VIRAASA heritage content
+        </div>
+        <div id="authError" class="auth-error"></div>
+        <form onsubmit="login(event)">
+          <label>Email</label>
+          <input
+            id="loginEmail"
+            type="email"
+            autocomplete="email"
+            required
+            placeholder="admin@example.com"
+          />
+          <label style="margin-top: 14px">Password</label>
+          <input
+            id="loginPassword"
+            type="password"
+            autocomplete="current-password"
+            required
+            placeholder="Your password"
+          />
+          <button
+            id="loginBtn"
+            class="btn primary"
+            style="width: 100%; margin-top: 18px"
+          >
+            LOGIN
+          </button>
+        </form>
+        <p class="sub" style="font-size: 12px; margin-top: 15px">
+          Use an email/password user created in Supabase Authentication and
+          added to the VIRAASA admin list.
+        </p>
+      </div>
+    </div>
+
+    <div id="appShell" class="app hidden">
+      <aside class="side">
+        <div class="logo">VIR<span>A</span>ASA</div>
+        <div class="nav">
+          <button class="active" onclick="page('dashboard', this)">
+            ▦ Dashboard
+          </button>
+          <button onclick="page('places', this)">◉ Heritage Places</button>
+          <button onclick="page('comments', this)">💬 Comments</button>
+          <button onclick="page('settings', this)">⚙ Settings</button>
+        </div>
+        <button
+          class="btn secondary"
+          style="width: 100%; margin-top: 25px"
+          onclick="logout()"
+        >
+          Logout
+        </button>
+      </aside>
+
+      <main class="main">
+        <section id="dashboard">
+          <div class="top">
+            <div>
+              <h1>Dashboard</h1>
+              <div class="sub">Manage VIRAASA heritage content</div>
+            </div>
+            <button class="btn primary" onclick="openEditor()">
+              + ADD NEW PLACE
+            </button>
+          </div>
+          <div class="stats">
+            <div class="card stat">
+              <span>Total Places</span><b id="count">0</b>
+            </div>
+            <div class="card stat">
+              <span>Published</span><b id="published">0</b>
+            </div>
+            <div class="card stat">
+              <span>Places with Media</span><b id="media">0</b>
+            </div>
+          </div>
+          <div class="card">
+            <h2>VIRAASA Admin</h2>
+            <p class="sub">
+              Manage places, create each place's customer link, and generate its
+              printable VIRAASA QR code. Data and media are stored in Supabase.
+            </p>
+            <button
+              class="btn primary"
+              onclick="
+                page('places', document.querySelectorAll('.nav button')[1])
+              "
+            >
+              MANAGE PLACES
+            </button>
+          </div>
+        </section>
+
+        <section id="places" class="hidden">
+          <div class="top">
+            <div>
+              <h1>Heritage Places</h1>
+              <div class="sub">Manage all VIRAASA locations</div>
+            </div>
+            <button class="btn primary" onclick="openEditor()">
+              + ADD NEW PLACE
+            </button>
+          </div>
+          <div class="notice">
+            Live mode: records and uploaded media are stored in Supabase.
+            QR links are generated from the Customer Website URL in Settings.
+          </div>
+          <div class="toolbar">
+            <input
+              id="search"
+              placeholder="Search places..."
+              oninput="render()"
+            />
+          </div>
+          <div id="grid" class="grid"></div>
+        </section>
+
+        <section id="editor" class="hidden">
+          <div class="top">
+            <div>
+              <h1 id="editorHeading">Add New Place</h1>
+              <div class="sub">
+                Everything is stored in Supabase. QR uses the permanent slug.
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <form onsubmit="save(event)">
+              <input type="hidden" id="id" />
+              <input
+                id="jsonImportFile"
+                type="file"
+                accept="application/json,.json"
+                style="display: none"
+                onchange="importPlaceJSON(this)"
+              />
+              <div class="editor-tools">
+                <button
+                  type="button"
+                  class="btn secondary"
+                  onclick="document.getElementById('jsonImportFile').click()"
+                >
+                  IMPORT JSON
+                </button>
+                <button
+                  type="button"
+                  class="btn secondary"
+                  onclick="downloadJSONTemplate()"
+                >
+                  JSON TEMPLATE
+                </button>
+                <button
+                  type="button"
+                  class="btn secondary"
+                  onclick="
+                    page('places', document.querySelectorAll('.nav button')[1])
+                  "
+                >
+                  ← BACK
+                </button>
+              </div>
+              <div class="formgrid">
+                <div>
+                  <label>Place Name (English) *</label
+                  ><input id="titleEn" required />
+                </div>
+                <div>
+                  <label>Place Name (Gujarati)</label><input id="titleGu" />
+                </div>
+                <div>
+                  <label>Place Name (Hindi)</label><input id="titleHi" />
+                </div>
+                <div>
+                  <label>Slug *</label><input id="slugField" required />
+                </div>
+                <div><label>Location</label><input id="location" /></div>
+                <div>
+                  <label>Era / Period</label
+                  ><input
+                    id="era"
+                    placeholder="e.g. 12th Century CE — Solanki Period"
+                  />
+                </div>
+                <div>
+                  <label>Category</label
+                  ><input id="category" list="categoryList" /><datalist
+                    id="categoryList"
+                  >
+                    <option>Heritage</option>
+                    <option>Temple</option>
+                    <option>Architecture</option>
+                    <option>Museum</option>
+                    <option>Historical Site</option>
+                    <option>Fort</option>
+                    <option>Palace</option>
+                    <option>Other</option>
+                  </datalist>
+                </div>
+                <div>
+                  <label>Status</label
+                  ><select id="active">
+                    <option value="true">Published</option>
+                    <option value="false">Draft</option>
+                  </select>
+                </div>
+                <div>
+                  <label>QR Enabled</label
+                  ><select id="qrEnabled">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+
+                <div class="full"><h3>ABOUT — 3 Languages</h3></div>
+                <div class="full">
+                  <label>About — English</label
+                  ><textarea id="aboutEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>About — Gujarati</label
+                  ><textarea id="aboutGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>About — Hindi</label><textarea id="aboutHi"></textarea>
+                </div>
+                <div class="full"><h3>HISTORICAL STORY — 3 Languages</h3></div>
+                <div class="full">
+                  <label>History — English</label
+                  ><textarea id="historyEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>History — Gujarati</label
+                  ><textarea id="historyGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>History — Hindi</label
+                  ><textarea id="historyHi"></textarea>
+                </div>
+                <div class="full"><h3>ARCHITECTURE — 3 Languages</h3></div>
+                <div class="full">
+                  <label>Architecture — English</label
+                  ><textarea id="architectureEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>Architecture — Gujarati</label
+                  ><textarea id="architectureGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>Architecture — Hindi</label
+                  ><textarea id="architectureHi"></textarea>
+                </div>
+                <div class="full"><h3>IMPORTANT FACTS — 3 Languages</h3></div>
+                <div class="full">
+                  <label>Facts — English</label
+                  ><textarea id="factsEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>Facts — Gujarati</label
+                  ><textarea id="factsGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>Facts — Hindi</label><textarea id="factsHi"></textarea>
+                </div>
+                <div class="full"><h3>WHY IT MATTERS — 3 Languages</h3></div>
+                <div class="full">
+                  <label>Why It Matters — English</label
+                  ><textarea id="whyEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>Why It Matters — Gujarati</label
+                  ><textarea id="whyGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>Why It Matters — Hindi</label
+                  ><textarea id="whyHi"></textarea>
+                </div>
+                <div class="full">
+                  <h3>6TH CUSTOM SECTION — PLACE SPECIFIC</h3>
+                  <div class="sub">
+                    Example: Connection to Vadnagar / Connection to Agra /
+                    Connection to Dwarka.
+                  </div>
+                </div>
+                <div>
+                  <label>Section Title — English</label
+                  ><input id="connectionTitleEn" />
+                </div>
+                <div>
+                  <label>Section Title — Gujarati</label
+                  ><input id="connectionTitleGu" />
+                </div>
+                <div>
+                  <label>Section Title — Hindi</label
+                  ><input id="connectionTitleHi" />
+                </div>
+                <div class="full">
+                  <label>Section Content — English</label
+                  ><textarea id="connectionTextEn"></textarea>
+                </div>
+                <div class="full">
+                  <label>Section Content — Gujarati</label
+                  ><textarea id="connectionTextGu"></textarea>
+                </div>
+                <div class="full">
+                  <label>Section Content — Hindi</label
+                  ><textarea id="connectionTextHi"></textarea>
+                </div>
+
+                <div class="full"><h3>MEDIA</h3>
+                  <div id="mediaRulesEditor" class="notice rules" style="margin-top:10px"></div>
+                  <div id="uploadProgress" class="upload-progress"><div id="uploadProgressBar"></div></div>
+                  <div id="uploadStatus" class="upload-status">Ready</div>
+                </div>
+                <div class="full">
+                  <label>Hero Image</label
+                  ><input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onchange="imagePreview(this)"
+                  /><img id="preview" class="preview" />
+                </div>
+                <div class="full">
+                  <label>English Video</label
+                  ><input id="videoEn" type="file" accept="video/*" />
+                </div>
+                <div class="full">
+                  <label>Gujarati Video</label
+                  ><input id="videoGu" type="file" accept="video/*" />
+                </div>
+                <div class="full">
+                  <label>Hindi Video</label
+                  ><input id="videoHi" type="file" accept="video/*" />
+                </div>
+                <div class="full">
+                  <label>English Audio</label
+                  ><input id="audioEn" type="file" accept="audio/*" />
+                </div>
+                <div class="full">
+                  <label>Gujarati Audio</label
+                  ><input id="audioGu" type="file" accept="audio/*" />
+                </div>
+                <div class="full">
+                  <label>Hindi Audio</label
+                  ><input id="audioHi" type="file" accept="audio/*" />
+                </div>
+                <div class="full">
+                  <label>English Audio Cover</label
+                  ><input id="coverEn" type="file" accept="image/*" />
+                </div>
+                <div class="full">
+                  <label>Gujarati Audio Cover</label
+                  ><input id="coverGu" type="file" accept="image/*" />
+                </div>
+                <div class="full">
+                  <label>Hindi Audio Cover</label
+                  ><input id="coverHi" type="file" accept="image/*" />
+                </div>
+                <div class="full">
+                  <h3>QR CODE</h3>
+                  <input
+                    id="placeLink"
+                    readonly
+                    placeholder="Save the place to generate its QR link"
+                  />
+                  <div id="qrcode" style="margin: 15px 0"></div>
+                  <div class="actions">
+                    <button
+                      type="button"
+                      class="btn secondary"
+                      onclick="copyPlaceLink()"
+                    >
+                      COPY LINK</button
+                    ><button
+                      type="button"
+                      class="btn secondary"
+                      onclick="openPlaceLink()"
+                    >
+                      OPEN</button
+                    ><button
+                      type="button"
+                      class="btn primary"
+                      onclick="downloadQR()"
+                    >
+                      DOWNLOAD QR
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: flex-end;
+                  margin-top: 20px;
+                "
+              >
+                <button class="btn primary" type="submit">SAVE PLACE</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="comments" class="hidden">
+          <div class="top">
+            <div>
+              <h1>Comments</h1>
+              <div class="sub">Review and delete visitor comments.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="toolbar">
+              <select id="commentPlaceFilter" onchange="loadAdminComments()">
+                <option value="">All places</option>
+              </select>
+            </div>
+            <div id="adminCommentsList"></div>
+          </div>
+        </section>
+        \n
+        <section id="settings" class="hidden">
+          <div class="top">
+            <div>
+              <h1>Settings</h1>
+              <div class="sub">Backend connection</div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>VIRAASA Connection</h2>
+            <p style="font-size: 13px">
+              <span class="status-dot"></span
+              ><span id="connectionStatus">Checking Supabase...</span>
+            </p>
+            <p class="sub">
+              Set the customer website address used for every place QR code and
+              link.
+            </p>
+            <label style="margin-top: 18px">Customer Website URL</label>
+            <input
+              id="customerBase"
+              placeholder="https://your-viraasa-site.com"
+            />
+            <p style="font-size: 12px; color: var(--muted); margin-top: 7px">
+              Example: if your customer site is <b>https://viraasa.in</b>, the
+              place link becomes <b>https://viraasa.in/?place=kirti-toran</b>.
+            </p>
+
+            <h3 style="margin-top: 22px">Supabase</h3>
+            <p class="sub">
+              The admin panel uses the Supabase project configured below. The
+              publishable key is safe for browser use; never use a
+              service-role/secret key here.
+            </p>
+            <label style="margin-top: 18px">Project URL</label>
+            <input id="sburl" placeholder="https://your-project.supabase.co" />
+            <label style="margin-top: 14px">Publishable Key</label>
+            <input id="sbkey" placeholder="Your Supabase publishable key" />
+            <button
+              class="btn primary"
+              style="margin-top: 15px"
+              onclick="saveSettings()"
+            >
+              SAVE SETTINGS
+            </button>
+            <div class="notice" style="margin-top: 15px">
+              Never put a Supabase service-role/secret key in this browser
+              panel.
+            </div>
+            <div id="mediaRulesSettings" class="notice rules" style="margin-top: 12px"></div>
+            <h3 style="margin-top: 22px">System check</h3>
+            <p class="sub">Press this before uploading a big video. It tests login, the database columns and every storage bucket in a few seconds.</p>
+            <button type="button" class="btn" style="margin-top: 10px" onclick="runSystemCheck()">RUN SYSTEM CHECK</button>
+            <div id="systemCheckResult" style="margin-top: 12px"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const SUPABASE_URL = "https://oegqphllucqywrykeqbs.supabase.co";
+      const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_dfk_GhoYm_eRCw4qrjwN2A_CnoTH7qh";
+
+      // VIRAASA upload policy. Supabase Free projects currently cap individual
+      // files at 50 MB; the application also keeps videos to 3 minutes so the
+      // admin workflow remains predictable for the client. If the Supabase
+      // project is upgraded and the global/bucket limit is raised, these values
+      // can be increased deliberately.
+      const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+      const MAX_VIDEO_SECONDS = 3 * 60;
+      const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+      const MAX_AUDIO_SECONDS = 10 * 60;
+      const RESUMABLE_THRESHOLD = 6 * 1024 * 1024;
+      const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+      const SUPABASE_PROJECT_REF = new URL(SUPABASE_URL).hostname.split(".")[0];
+      const SUPABASE_STORAGE_TUS_ENDPOINT =
+        `https://${SUPABASE_PROJECT_REF}.storage.supabase.co/storage/v1/upload/resumable`;
+
+      const { createClient } = window.supabase;
+      const supabaseClient = createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+          },
+        },
+      );
+      const SETTINGS_KEY = "viraasa_admin_settings_v3";
+      let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+      let places = [];
+      let editingPlaceId = null;
+      let importedMediaUrls = {
+        image_url: "",
+        video_en: "",
+        video_gu: "",
+        video_hi: "",
+        audio_en: "",
+        audio_gu: "",
+        audio_hi: "",
+        audio_cover_en: "",
+        audio_cover_gu: "",
+        audio_cover_hi: "",
+      };
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[m],
+        );
+      const makeSlug = (s) =>
+        String(s || "")
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "") || `place-${Date.now()}`;
+      function toast(s, ms = 3000) {
+        const t = $("toast");
+        t.textContent = s;
+        t.classList.add("show");
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => t.classList.remove("show"), ms);
+      }
+      function showAuthError(s) {
+        $("authError").textContent = s;
+        $("authError").classList.add("show");
+      }
+      function clearAuthError() {
+        $("authError").classList.remove("show");
+      }
+      async function login(e) {
+        e.preventDefault();
+        clearAuthError();
+        const b = $("loginBtn");
+        b.disabled = true;
+        b.textContent = "LOGGING IN...";
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email: $("loginEmail").value.trim(),
+          password: $("loginPassword").value,
+        });
+        if (error) {
+          showAuthError(error.message);
+          b.disabled = false;
+          b.textContent = "LOGIN";
+          return;
+        }
+        try { localStorage.setItem("viraasa_admin_email", $("loginEmail").value.trim()); } catch {}
+        await enterApp();
+        b.disabled = false;
+        b.textContent = "LOGIN";
+      }
+      async function enterApp() {
+        $("authScreen").classList.add("hidden");
+        $("appShell").classList.remove("hidden");
+        await loadSettings();
+        await loadPlaces();
+        stats();
+        render();
+      }
+      async function init() {
+        try {
+          const saved = localStorage.getItem("viraasa_admin_email");
+          if (saved && $("loginEmail")) $("loginEmail").value = saved;
+        } catch {}
+        renderMediaRules();
+        injectMediaExtras();
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (session?.user) await enterApp();
+        else {
+          $("authScreen").classList.remove("hidden");
+          $("appShell").classList.add("hidden");
+        }
+      }
+      supabaseClient.auth.onAuthStateChange((event) => {
+        if (event === "SIGNED_OUT") {
+          $("authScreen").classList.remove("hidden");
+          $("appShell").classList.add("hidden");
+        }
+      });
+      async function logout() {
+        await supabaseClient.auth.signOut();
+      }
+      async function loadPlaces() {
+        const { data, error } = await supabaseClient
+          .from("heritage_places")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) {
+          toast("Could not load places: " + error.message);
+          return;
+        }
+        places = data || [];
+      }
+      function page(id, btn) {
+        ["dashboard", "places", "editor", "comments", "settings"].forEach((x) =>
+          $(x)?.classList.add("hidden"),
+        );
+        $(id)?.classList.remove("hidden");
+        document
+          .querySelectorAll(".nav button")
+          .forEach((x) => x.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+        if (id === "places") render();
+        if (id === "settings") loadSettings();
+        if (id === "comments") loadAdminComments();
+        stats();
+      }
+      function stats() {
+        $("count").textContent = places.length;
+        $("published").textContent = places.filter((p) => p.active).length;
+        $("media").textContent = places.filter(
+          (p) =>
+            p.image_url ||
+            p.video_en ||
+            p.video_gu ||
+            p.video_hi ||
+            p.audio_en ||
+            p.audio_gu ||
+            p.audio_hi,
+        ).length;
+      }
+      function render() {
+        const q = ($("search")?.value || "").toLowerCase();
+        const a = places.filter((p) =>
+          (
+            p.title_en +
+            " " +
+            (p.title_gu || "") +
+            " " +
+            (p.title_hi || "") +
+            " " +
+            (p.location || "")
+          )
+            .toLowerCase()
+            .includes(q),
+        );
+        $("grid").innerHTML =
+          a
+            .map(
+              (p) =>
+                `<div class="card place"><div class="thumb">${p.image_url ? `<img src="${esc(p.image_url)}" alt="">` : "No image"}</div><div class="placebody"><h3>${esc(p.title_en)}</h3><p>${esc(p.location || "")} · ${p.active ? "Published" : "Draft"} · ${esc(p.slug || "")}</p><div class="actions"><button class="btn secondary" onclick="openEditor('${p.id}')">EDIT</button><button class="btn primary" onclick="openPlaceQR('${p.id}')">QR</button><button class="btn danger" onclick="del('${p.id}')">DELETE</button></div></div></div>`,
+            )
+            .join("") ||
+          '<div class="card" style="grid-column:1/-1;text-align:center;padding:45px">No places found.</div>';
+      }
+      function resetEditor() {
+        [
+          "id",
+          "titleEn",
+          "titleGu",
+          "titleHi",
+          "slugField",
+          "location",
+          "era",
+          "aboutEn",
+          "aboutGu",
+          "aboutHi",
+          "historyEn",
+          "historyGu",
+          "historyHi",
+          "architectureEn",
+          "architectureGu",
+          "architectureHi",
+          "factsEn",
+          "factsGu",
+          "factsHi",
+          "whyEn",
+          "whyGu",
+          "whyHi",
+          "connectionTitleEn",
+          "connectionTitleGu",
+          "connectionTitleHi",
+          "connectionTextEn",
+          "connectionTextGu",
+          "connectionTextHi",
+          "placeLink",
+        ].forEach((id) => ($(id).value = ""));
+        $("active").value = "true";
+        $("qrEnabled").value = "true";
+        $("image").value = "";
+        [
+          "videoEn",
+          "videoGu",
+          "videoHi",
+          "audioEn",
+          "audioGu",
+          "audioHi",
+          "coverEn",
+          "coverGu",
+          "coverHi",
+        ].forEach((id) => ($(id).value = ""));
+        $("jsonImportFile").value = "";
+        $("preview").classList.remove("show");
+        $("preview").removeAttribute("src");
+        $("qrcode").innerHTML = "";
+        setUploadStatus("", null);
+        clearMediaExtras();
+        importedMediaUrls = {
+          image_url: "",
+          video_en: "",
+          video_gu: "",
+          video_hi: "",
+          audio_en: "",
+          audio_gu: "",
+          audio_hi: "",
+          audio_cover_en: "",
+          audio_cover_gu: "",
+          audio_cover_hi: "",
+        };
+      }
+      function fill(id, v) {
+        $(id).value = v ?? "";
+      }
+      function jsonPick(obj, keys, fallback = "") {
+        for (const key of keys) {
+          if (obj && obj[key] !== undefined && obj[key] !== null)
+            return obj[key];
+        }
+        return fallback;
+      }
+      function jsonText(v) {
+        if (v === undefined || v === null) return "";
+        return typeof v === "string" ? v : String(v);
+      }
+      function jsonBool(v, fallback = true) {
+        if (v === undefined || v === null || v === "") return fallback;
+        const x = String(v).trim().toLowerCase();
+        return !(
+          x === "false" ||
+          x === "0" ||
+          x === "draft" ||
+          x === "no" ||
+          x === "off"
+        );
+      }
+      function importPlaceJSON(input) {
+        const file = input?.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            let data = parsed;
+            if (Array.isArray(parsed)) data = parsed[0];
+            if (parsed && Array.isArray(parsed.places)) data = parsed.places[0];
+            if (!data || typeof data !== "object" || Array.isArray(data))
+              throw new Error(
+                "JSON must contain one place object or a places array.",
+              );
+            data = normalizeImportData(data);
+            const titleEn = jsonText(
+              jsonPick(data, [
+                "title_en",
+                "titleEn",
+                "name_en",
+                "name",
+                "title",
+              ]),
+            );
+            if (!titleEn.trim())
+              throw new Error("Place Name (English) is required in the JSON.");
+            fill("titleEn", titleEn);
+            fill("titleGu", jsonPick(data, ["title_gu", "titleGu", "name_gu"]));
+            fill("titleHi", jsonPick(data, ["title_hi", "titleHi", "name_hi"]));
+            fill(
+              "slugField",
+              jsonPick(data, ["slug", "slugField"], makeSlug(titleEn)),
+            );
+            fill(
+              "location",
+              jsonPick(
+                data,
+                ["location", "place_location"],
+                "Vadnagar, Gujarat",
+              ),
+            );
+            fill(
+              "era",
+              jsonPick(data, ["era", "era_period", "eraPeriod", "period"]),
+            );
+            fill("category", jsonPick(data, ["category"], "Heritage"));
+            $("active").value = jsonBool(
+              jsonPick(data, ["active", "published", "status"], true),
+            )
+              ? "true"
+              : "false";
+            $("qrEnabled").value = jsonBool(
+              jsonPick(data, ["qr_enabled", "qrEnabled"], true),
+            )
+              ? "true"
+              : "false";
+
+            fill("aboutEn", jsonPick(data, ["about_en", "aboutEn", "about"]));
+            fill("aboutGu", jsonPick(data, ["about_gu", "aboutGu"]));
+            fill("aboutHi", jsonPick(data, ["about_hi", "aboutHi"]));
+            fill(
+              "historyEn",
+              jsonPick(data, ["history_en", "historyEn", "history"]),
+            );
+            fill("historyGu", jsonPick(data, ["history_gu", "historyGu"]));
+            fill("historyHi", jsonPick(data, ["history_hi", "historyHi"]));
+            fill(
+              "architectureEn",
+              jsonPick(data, [
+                "architecture_en",
+                "architectureEn",
+                "architecture",
+              ]),
+            );
+            fill(
+              "architectureGu",
+              jsonPick(data, ["architecture_gu", "architectureGu"]),
+            );
+            fill(
+              "architectureHi",
+              jsonPick(data, ["architecture_hi", "architectureHi"]),
+            );
+            fill(
+              "factsEn",
+              jsonPick(data, [
+                "important_facts_en",
+                "facts_en",
+                "factsEn",
+                "facts",
+                "important_facts",
+              ]),
+            );
+            fill(
+              "factsGu",
+              jsonPick(data, ["important_facts_gu", "facts_gu", "factsGu"]),
+            );
+            fill(
+              "factsHi",
+              jsonPick(data, ["important_facts_hi", "facts_hi", "factsHi"]),
+            );
+            fill(
+              "whyEn",
+              jsonPick(data, ["why_it_matters_en", "whyEn", "why_it_matters"]),
+            );
+            fill("whyGu", jsonPick(data, ["why_it_matters_gu", "whyGu"]));
+            fill("whyHi", jsonPick(data, ["why_it_matters_hi", "whyHi"]));
+            fill(
+              "connectionTitleEn",
+              jsonPick(data, [
+                "connection_title_en",
+                "connectionTitleEn",
+                "custom_title_en",
+              ]),
+            );
+            fill(
+              "connectionTitleGu",
+              jsonPick(data, [
+                "connection_title_gu",
+                "connectionTitleGu",
+                "custom_title_gu",
+              ]),
+            );
+            fill(
+              "connectionTitleHi",
+              jsonPick(data, [
+                "connection_title_hi",
+                "connectionTitleHi",
+                "custom_title_hi",
+              ]),
+            );
+            fill(
+              "connectionTextEn",
+              jsonPick(data, [
+                "connection_text_en",
+                "connectionTextEn",
+                "custom_text_en",
+                "connection_en",
+              ]),
+            );
+            fill(
+              "connectionTextGu",
+              jsonPick(data, [
+                "connection_text_gu",
+                "connectionTextGu",
+                "custom_text_gu",
+                "connection_gu",
+              ]),
+            );
+            fill(
+              "connectionTextHi",
+              jsonPick(data, [
+                "connection_text_hi",
+                "connectionTextHi",
+                "custom_text_hi",
+                "connection_hi",
+              ]),
+            );
+
+            importedMediaUrls = {
+              image_url: jsonText(
+                jsonPick(data, ["image_url", "imageUrl", "image"], ""),
+              ),
+              video_en: jsonText(
+                jsonPick(data, ["video_en", "videoEn", "video_url_en"], ""),
+              ),
+              video_gu: jsonText(
+                jsonPick(data, ["video_gu", "videoGu", "video_url_gu"], ""),
+              ),
+              video_hi: jsonText(
+                jsonPick(data, ["video_hi", "videoHi", "video_url_hi"], ""),
+              ),
+              audio_en: jsonText(
+                jsonPick(data, ["audio_en", "audioEn", "audio_url_en"], ""),
+              ),
+              audio_gu: jsonText(
+                jsonPick(data, ["audio_gu", "audioGu", "audio_url_gu"], ""),
+              ),
+              audio_hi: jsonText(
+                jsonPick(data, ["audio_hi", "audioHi", "audio_url_hi"], ""),
+              ),
+              audio_cover_en: jsonText(
+                jsonPick(
+                  data,
+                  ["audio_cover_en", "coverEn", "audioCoverEn"],
+                  "",
+                ),
+              ),
+              audio_cover_gu: jsonText(
+                jsonPick(
+                  data,
+                  ["audio_cover_gu", "coverGu", "audioCoverGu"],
+                  "",
+                ),
+              ),
+              audio_cover_hi: jsonText(
+                jsonPick(
+                  data,
+                  ["audio_cover_hi", "coverHi", "audioCoverHi"],
+                  "",
+                ),
+              ),
+            };
+            if (importedMediaUrls.image_url) {
+              $("preview").src = importedMediaUrls.image_url;
+              $("preview").classList.add("show");
+            } else {
+              $("preview").classList.remove("show");
+              $("preview").removeAttribute("src");
+            }
+            updatePlaceLink($("slugField").value.trim());
+            prefillMediaUrls(importedMediaUrls, true);
+            importReport();
+          } catch (err) {
+            console.error(err);
+            toast("JSON import failed: " + (err.message || err));
+          } finally {
+            input.value = "";
+          }
+        };
+        reader.onerror = () => {
+          toast("Could not read the JSON file.");
+          input.value = "";
+        };
+        reader.readAsText(file);
+      }
+      function downloadJSONTemplate() {
+        const template = {
+          title_en: "Kirti Toran",
+          title_gu: "કીર્તિ તોરણ",
+          title_hi: "कीर्ति तोरण",
+          slug: "kirti-toran",
+          location: "Vadnagar, Gujarat",
+          era: "12th Century CE — Solanki Period",
+          category: "Architecture",
+          active: true,
+          qr_enabled: true,
+          about_en: "",
+          about_gu: "",
+          about_hi: "",
+          history_en: "",
+          history_gu: "",
+          history_hi: "",
+          architecture_en: "",
+          architecture_gu: "",
+          architecture_hi: "",
+          important_facts_en: "",
+          important_facts_gu: "",
+          important_facts_hi: "",
+          why_it_matters_en: "",
+          why_it_matters_gu: "",
+          why_it_matters_hi: "",
+          connection_title_en: "",
+          connection_title_gu: "",
+          connection_title_hi: "",
+          connection_text_en: "",
+          connection_text_gu: "",
+          connection_text_hi: "",
+          image_url: "",
+          video_en: "",
+          video_gu: "",
+          video_hi: "",
+          audio_en: "",
+          audio_gu: "",
+          audio_hi: "",
+          audio_cover_en: "",
+          audio_cover_gu: "",
+          audio_cover_hi: "",
+        };
+        const blob = new Blob([JSON.stringify(template, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "viraasa-place-template.json";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+      function openEditor(id) {
+        page("editor");
+        resetEditor();
+        editingPlaceId = id || null;
+        $("id").value = id || "";
+        $("editorHeading").textContent = id
+          ? "Edit Heritage Place"
+          : "Add New Place";
+        if (!id) {
+          fill("slugField", "");
+          return;
+        }
+        const p = places.find((x) => x.id === id);
+        if (!p) return;
+        const map = {
+          titleEn: "title_en",
+          titleGu: "title_gu",
+          titleHi: "title_hi",
+          slugField: "slug",
+          location: "location",
+          era: "era",
+          category: "category",
+          active: "active",
+          qrEnabled: "qr_enabled",
+          aboutEn: "about_en",
+          aboutGu: "about_gu",
+          aboutHi: "about_hi",
+          historyEn: "history_en",
+          historyGu: "history_gu",
+          historyHi: "history_hi",
+          architectureEn: "architecture_en",
+          architectureGu: "architecture_gu",
+          architectureHi: "architecture_hi",
+          factsEn: "important_facts_en",
+          factsGu: "important_facts_gu",
+          factsHi: "important_facts_hi",
+          whyEn: "why_it_matters_en",
+          whyGu: "why_it_matters_gu",
+          whyHi: "why_it_matters_hi",
+          connectionTitleEn: "connection_title_en",
+          connectionTitleGu: "connection_title_gu",
+          connectionTitleHi: "connection_title_hi",
+          connectionTextEn: "connection_text_en",
+          connectionTextGu: "connection_text_gu",
+          connectionTextHi: "connection_text_hi",
+        };
+        Object.entries(map).forEach(([a, b]) => fill(a, p[b]));
+        prefillMediaUrls(p);
+        if (p.image_url) {
+          $("preview").src = p.image_url;
+          $("preview").classList.add("show");
+        }
+        updatePlaceLink(p.slug);
+      }
+      function imagePreview(input) {
+        const f = input.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = (e) => {
+          $("preview").src = e.target.result;
+          $("preview").classList.add("show");
+        };
+        r.readAsDataURL(f);
+      }
+      function setUploadStatus(message, percent = null) {
+        const box = $("uploadStatus");
+        const wrap = $("uploadProgress");
+        const bar = $("uploadProgressBar");
+        if (box) {
+          box.textContent = message || "";
+          box.classList.remove("err", "okmsg");
+          box.classList.toggle("show", !!message);
+        }
+        if (wrap) wrap.classList.toggle("show", percent !== null);
+        if (bar && percent !== null)
+          bar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+      }
+
+      function encodeTusMetadata(value) {
+        return btoa(unescape(encodeURIComponent(String(value || ""))));
+      }
+
+      function formatBytes(bytes) {
+        if (!Number.isFinite(bytes)) return "unknown size";
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      }
+
+      function getMediaDuration(file) {
+        return new Promise((resolve) => {
+          const tag = file.type.startsWith("video/") ? "video" : "audio";
+          const el = document.createElement(tag);
+          const url = URL.createObjectURL(file);
+          let finished = false;
+          const done = (value) => {
+            if (finished) return;
+            finished = true;
+            URL.revokeObjectURL(url);
+            el.remove();
+            resolve(Number.isFinite(value) ? value : 0);
+          };
+          el.preload = "metadata";
+          el.onloadedmetadata = () => done(el.duration || 0);
+          el.onerror = () => done(0); // Size/type validation still applies.
+          el.src = url;
+        });
+      }
+
+      async function uploadMediaStandard(file, bucket, folder) {
+        const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+        const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+        const { error } = await supabaseClient.storage
+          .from(bucket)
+          .upload(path, file, {
+            upsert: false,
+            cacheControl: "3600",
+            contentType: mediaMime(file),
+          });
+        if (error) throw error;
+        return {
+          url: supabaseClient.storage.from(bucket).getPublicUrl(path).data.publicUrl,
+          bucket,
+          path,
+        };
+      }
+
+      async function uploadMediaResumable(file, bucket, folder) {
+        if (!window.tus?.Upload)
+          throw new Error("Resumable upload library could not be loaded. Refresh and try again.");
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (!session?.access_token)
+          throw new Error("Your admin session expired. Please log in again.");
+
+        const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+        const fp = [...`${file.name}|${file.size}|${file.lastModified}`].reduce((h, c) => ((h << 5) - h + c.charCodeAt(0)) | 0, 5381);
+        const path = `${folder}/${(fp >>> 0).toString(16)}-${file.size}.${ext}`;
+
+        return new Promise((resolve, reject) => {
+          const upload = new tus.Upload(file, {
+            endpoint: SUPABASE_STORAGE_TUS_ENDPOINT,
+            retryDelays: [0, 3000, 5000, 10000, 20000],
+            headers: {
+              authorization: `Bearer ${session.access_token}`,
+              apikey: SUPABASE_PUBLISHABLE_KEY,
+              "x-upsert": "true",
+            },
+            metadata: {
+              bucketName: encodeTusMetadata(bucket),
+              objectName: encodeTusMetadata(path),
+              contentType: encodeTusMetadata(mediaMime(file)),
+              cacheControl: encodeTusMetadata("3600"),
+            },
+            chunkSize: 6 * 1024 * 1024,
+            uploadDataDuringCreation: true,
+            removeFingerprintOnSuccess: true,
+            onError(error) {
+              reject(error);
+            },
+            onProgress(bytesUploaded, bytesTotal) {
+              const pct = bytesTotal ? (bytesUploaded / bytesTotal) * 100 : 0;
+              setUploadStatus(
+                `Uploading ${file.name} — ${pct.toFixed(0)}%`,
+                pct,
+              );
+            },
+            onSuccess() {
+              resolve({
+                url: supabaseClient.storage.from(bucket).getPublicUrl(path).data.publicUrl,
+                bucket,
+                path,
+              });
+            },
+          });
+
+          // Resume an interrupted upload when tus-js-client has a matching
+          // fingerprint available in this browser.
+          upload
+            .findPreviousUploads()
+            .then((previousUploads) => {
+              if (previousUploads.length) {
+                upload.resumeFromPreviousUpload(previousUploads[0]);
+                setUploadStatus(`Resuming ${file.name}…`, null);
+              }
+              upload.start();
+            })
+            .catch(reject);
+        });
+      }
+
+      async function removeUploadedMedia(items) {
+        const grouped = {};
+        for (const item of items || []) {
+          if (!item?.bucket || !item?.path) continue;
+          grouped[item.bucket] ||= [];
+          grouped[item.bucket].push(item.path);
+        }
+        for (const [bucket, paths] of Object.entries(grouped)) {
+          try {
+            await supabaseClient.storage.from(bucket).remove(paths);
+          } catch (e) {
+            console.warn("Could not clean up orphaned media:", e);
+          }
+        }
+      }
+
+      async function save(e) {
+        e.preventDefault();
+        let old = places.find((p) => p.id === $("id").value);
+        let id = $("id").value || null;
+        const saveBtn = e.submitter;
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "SAVING...";
+        }
+        let uploadedMedia = [];
+        try {
+          const slug =
+            $("slugField").value.trim() || makeSlug($("titleEn").value);
+          const p = {
+            slug,
+            title_en: $("titleEn").value.trim(),
+            title_gu: $("titleGu").value.trim(),
+            title_hi: $("titleHi").value.trim(),
+            location: $("location").value.trim(),
+            era: $("era").value.trim(),
+            category: $("category").value.trim() || "Heritage",
+            active: $("active").value === "true",
+            qr_enabled: $("qrEnabled").value === "true",
+            about_en: $("aboutEn").value,
+            about_gu: $("aboutGu").value,
+            about_hi: $("aboutHi").value,
+            history_en: $("historyEn").value,
+            history_gu: $("historyGu").value,
+            history_hi: $("historyHi").value,
+            architecture_en: $("architectureEn").value,
+            architecture_gu: $("architectureGu").value,
+            architecture_hi: $("architectureHi").value,
+            important_facts_en: $("factsEn").value,
+            important_facts_gu: $("factsGu").value,
+            important_facts_hi: $("factsHi").value,
+            why_it_matters_en: $("whyEn").value,
+            why_it_matters_gu: $("whyGu").value,
+            why_it_matters_hi: $("whyHi").value,
+            connection_title_en: $("connectionTitleEn").value,
+            connection_title_gu: $("connectionTitleGu").value,
+            connection_title_hi: $("connectionTitleHi").value,
+            connection_text_en: $("connectionTextEn").value,
+            connection_text_gu: $("connectionTextGu").value,
+            connection_text_hi: $("connectionTextHi").value,
+            image_url: importedMediaUrls.image_url || old?.image_url || null,
+            video_url: old?.video_url || null,
+            audio_url: old?.audio_url || null,
+            video_en: importedMediaUrls.video_en || old?.video_en || null,
+            video_gu: importedMediaUrls.video_gu || old?.video_gu || null,
+            video_hi: importedMediaUrls.video_hi || old?.video_hi || null,
+            audio_en: importedMediaUrls.audio_en || old?.audio_en || null,
+            audio_gu: importedMediaUrls.audio_gu || old?.audio_gu || null,
+            audio_hi: importedMediaUrls.audio_hi || old?.audio_hi || null,
+            audio_cover_en:
+              importedMediaUrls.audio_cover_en || old?.audio_cover_en || null,
+            audio_cover_gu:
+              importedMediaUrls.audio_cover_gu || old?.audio_cover_gu || null,
+            audio_cover_hi:
+              importedMediaUrls.audio_cover_hi || old?.audio_cover_hi || null,
+          };
+          const folder = id || slug;
+          // Validate EVERYTHING first, so nothing is half-uploaded.
+          for (const f of MEDIA_FIELDS) {
+            const file = $(f.id)?.files?.[0];
+            if (file) await validateMediaFile(file, f.kind);
+            else {
+              const u = ($(f.urlId)?.value || "").trim();
+              if (u && !/^https?:\/\//i.test(u))
+                throw new Error(`${f.label}: the pasted link must start with https://`);
+            }
+          }
+          for (const f of MEDIA_FIELDS) {
+            const file = $(f.id)?.files?.[0];
+            if (file) {
+              setUploadStatus(`Uploading ${f.label}…`, 0);
+              const result = await uploadMedia(file, f.bucket, f.sub ? folder + f.sub : folder);
+              p[f.key] = result.url;
+              uploadedMedia.push(result);
+            } else {
+              // The link box always shows the current file; clearing it removes the media.
+              p[f.key] = ($(f.urlId)?.value || "").trim() || null;
+            }
+          }
+          // If a JSON import uses an existing slug, update that record instead of
+          // attempting a duplicate INSERT. This keeps slug as the permanent key.
+          if (!old && slug) {
+            const existing = places.find((x) => x.slug === slug);
+            if (existing) {
+              old = existing;
+              id = existing.id;
+              $("id").value = existing.id;
+            }
+          }
+          if (old) {
+            const { error } = await supabaseClient
+              .from("heritage_places")
+              .update(p)
+              .eq("id", id);
+            if (error) throw error;
+          } else {
+            const { data, error } = await supabaseClient
+              .from("heritage_places")
+              .insert(p)
+              .select("id")
+              .single();
+            if (error) throw error;
+            id = data.id;
+            $("id").value = id;
+          }
+          await loadPlaces();
+          stats();
+          render();
+          updatePlaceLink(slug);
+          setUploadStatus("", null);
+          toast("Place saved successfully");
+          page("places", document.querySelectorAll(".nav button")[1]);
+        } catch (err) {
+          console.error(err);
+          await removeUploadedMedia(uploadedMedia);
+          const msg = String(err?.message || err);
+          setUploadError("Save failed: " + msg);
+          toast("Save failed: " + msg.slice(0, 160), 9000);
+          $("uploadStatus")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        } finally {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "SAVE PLACE";
+          }
+        }
+      }
+      async function del(id) {
+        if (!confirm("Delete this place?")) return;
+        const { error } = await supabaseClient
+          .from("heritage_places")
+          .delete()
+          .eq("id", id);
+        if (error) return toast("Delete failed: " + error.message);
+        await loadPlaces();
+        stats();
+        render();
+        toast("Place deleted");
+      }
+      function getCustomerBase() {
+        return (settings.customerBase || "").trim().replace(/\/+$/, "");
+      }
+      function buildPlaceLink(slug) {
+        const base = getCustomerBase();
+        return base && slug ? `${base}/?place=${encodeURIComponent(slug)}` : "";
+      }
+      function updatePlaceLink(slug) {
+        const link = buildPlaceLink(slug);
+        $("placeLink").value = link;
+        $("qrcode").innerHTML = "";
+        if (link && window.QRCode)
+          new QRCode($("qrcode"), {
+            text: link,
+            width: 180,
+            height: 180,
+            colorDark: "#4A2C1A",
+            colorLight: "#FFFDF8",
+          });
+      }
+      function openPlaceQR(id) {
+        const p = places.find((x) => x.id === id);
+        if (!p) return;
+        openEditor(id);
+        setTimeout(() => updatePlaceLink(p.slug), 50);
+      }
+      async function copyPlaceLink() {
+        const v = $("placeLink").value;
+        if (!v) return toast("Save the place first.");
+        try {
+          await navigator.clipboard.writeText(v);
+          toast("Link copied");
+        } catch {
+          toast("Copy failed");
+        }
+      }
+      function openPlaceLink() {
+        const v = $("placeLink").value;
+        if (v) window.open(v, "_blank", "noopener");
+      }
+      function downloadQR() {
+        const q = $("qrcode"),
+          canvas = q?.querySelector("canvas"),
+          img = q?.querySelector("img");
+        if (!canvas && !img) return toast("Generate the QR first");
+        const a = document.createElement("a");
+        a.download = `${$("slugField").value || "viraasa-place"}-qr.png`;
+        a.href = canvas ? canvas.toDataURL("image/png") : img.src;
+        a.click();
+      }
+      async function loadSettings() {
+        settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        $("customerBase").value =
+          settings.customerBase || "https://viraasa.netlify.app";
+        $("sburl").value = SUPABASE_URL;
+        $("sbkey").value = SUPABASE_PUBLISHABLE_KEY;
+        $("sbkey").type = "password";
+        $("connectionStatus").textContent = "Connected to Supabase";
+      }
+      async function saveSettings() {
+        settings.customerBase = $("customerBase").value.trim();
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        if ($("slugField")?.value) updatePlaceLink($("slugField").value);
+        toast("Settings saved");
+      }
+      async function loadAdminComments() {
+        const f = $("commentPlaceFilter");
+        if (f) {
+          f.innerHTML =
+            '<option value="">All places</option>' +
+            places
+              .map((p) => `<option value="${p.id}">${esc(p.title_en)}</option>`)
+              .join("");
+        }
+        const place = f?.value || "";
+        let q = `select=id,user_id,place_id,comment,rating,created_at,profiles(display_name),heritage_places(title_en)&order=created_at.desc&limit=200`;
+        if (place) q += `&place_id=eq.${encodeURIComponent(place)}`;
+        try {
+          const rows = await supabaseClient
+            .from("comments")
+            .select(
+              "id,user_id,place_id,comment,rating,created_at,profiles(display_name),heritage_places(title_en)",
+            )
+            .order("created_at", { ascending: false })
+            .limit(200);
+          if (rows.error) throw rows.error;
+          $("adminCommentsList").innerHTML =
+            (rows.data || [])
+              .map(
+                (c) =>
+                  `<div class="card" style="margin-top:12px"><b>${esc(c.profiles?.display_name || "Visitor")}</b> · ${esc(c.heritage_places?.title_en || "")}<div class="sub">${new Date(c.created_at).toLocaleString()}</div><p style="margin:10px 0">${esc(c.comment)}</p><button class="btn danger" onclick="adminDeleteComment('${c.id}')">DELETE</button></div>`,
+              )
+              .join("") ||
+            '<div class="sub" style="padding:20px">No comments.</div>';
+        } catch (e) {
+          $("adminCommentsList").innerHTML =
+            '<div class="sub">Comments could not be loaded. Run the admin policy migration first.</div>';
+        }
+      }
+      async function adminDeleteComment(id) {
+        if (!confirm("Delete this comment?")) return;
+        const { error } = await supabaseClient
+          .from("comments")
+          .delete()
+          .eq("id", id);
+        if (error) return toast("Delete failed: " + error.message);
+        loadAdminComments();
+        toast("Comment deleted");
+      }
+
+      // =====================================================================
+      // MEDIA FIELDS, VALIDATION, UPLOAD (rewritten for reliability)
+      // =====================================================================
+      const MEDIA_FIELDS = [
+        { id: "image", urlId: "url_image", key: "image_url", bucket: "images", sub: "", kind: "image", label: "Hero image" },
+        { id: "videoEn", urlId: "url_videoEn", key: "video_en", bucket: "videos", sub: "", kind: "video", label: "English video" },
+        { id: "videoGu", urlId: "url_videoGu", key: "video_gu", bucket: "videos", sub: "", kind: "video", label: "Gujarati video" },
+        { id: "videoHi", urlId: "url_videoHi", key: "video_hi", bucket: "videos", sub: "", kind: "video", label: "Hindi video" },
+        { id: "audioEn", urlId: "url_audioEn", key: "audio_en", bucket: "audio", sub: "", kind: "audio", label: "English audio" },
+        { id: "audioGu", urlId: "url_audioGu", key: "audio_gu", bucket: "audio", sub: "", kind: "audio", label: "Gujarati audio" },
+        { id: "audioHi", urlId: "url_audioHi", key: "audio_hi", bucket: "audio", sub: "", kind: "audio", label: "Hindi audio" },
+        { id: "coverEn", urlId: "url_coverEn", key: "audio_cover_en", bucket: "images", sub: "/audio-covers", kind: "image", label: "English audio cover" },
+        { id: "coverGu", urlId: "url_coverGu", key: "audio_cover_gu", bucket: "images", sub: "/audio-covers", kind: "image", label: "Gujarati audio cover" },
+        { id: "coverHi", urlId: "url_coverHi", key: "audio_cover_hi", bucket: "images", sub: "/audio-covers", kind: "image", label: "Hindi audio cover" },
+      ];
+      const EXT_KIND = {
+        mp4: "video", m4v: "video", mov: "video", webm: "video", mkv: "video", avi: "video", "3gp": "video",
+        mp3: "audio", m4a: "audio", aac: "audio", wav: "audio", ogg: "audio", oga: "audio", opus: "audio", flac: "audio", amr: "audio", weba: "audio",
+        jpg: "image", jpeg: "image", png: "image", webp: "image", gif: "image", avif: "image",
+      };
+      const EXT_MIME = {
+        mp4: "video/mp4", m4v: "video/mp4", mov: "video/quicktime", webm: "video/webm", mkv: "video/x-matroska", avi: "video/x-msvideo", "3gp": "video/3gpp",
+        mp3: "audio/mpeg", m4a: "audio/mp4", aac: "audio/aac", wav: "audio/wav", ogg: "audio/ogg", oga: "audio/ogg", opus: "audio/ogg", flac: "audio/flac", amr: "audio/amr", weba: "audio/webm",
+        jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif", avif: "image/avif",
+      };
+      const fileExt = (f) => (f.name.split(".").pop() || "").toLowerCase();
+      function mediaKind(file) {
+        const t = (file.type || "").toLowerCase();
+        if (t.startsWith("video/")) return "video";
+        if (t.startsWith("audio/")) return "audio";
+        if (t.startsWith("image/")) return "image";
+        return EXT_KIND[fileExt(file)] || "";
+      }
+      // WhatsApp / phone files often have an empty or odd type like "audio/ogg; codecs=opus".
+      function mediaMime(file) {
+        const t = (file.type || "").split(";")[0].trim().toLowerCase();
+        return t || EXT_MIME[fileExt(file)] || "application/octet-stream";
+      }
+      function fmtDur(sec) {
+        sec = Math.round(sec || 0);
+        return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")} min`;
+      }
+      function mediaRulesHTML() {
+        const vMB = Math.round(MAX_VIDEO_BYTES / 1048576), vMin = Math.round(MAX_VIDEO_SECONDS / 60);
+        const aMB = Math.round(MAX_AUDIO_BYTES / 1048576), aMin = Math.round(MAX_AUDIO_SECONDS / 60);
+        const iMB = Math.round(MAX_IMAGE_BYTES / 1048576);
+        return `<b style="font-size:14px">📌 Upload limits (please read once)</b><br>
+          <b>VIDEO:</b> max <b>${vMB} MB</b> <u>and</u> max <b>${vMin} minutes</b> per file. Best format: <b>MP4 (H.264 + AAC), 720p</b>.<br>
+          <b>AUDIO:</b> max <b>${aMB} MB</b> and max <b>${aMin} minutes</b> per file. Best format: <b>MP3 or M4A</b> (a 4-minute MP3 is only 2–4 MB).<br>
+          <b>IMAGES</b> (hero + audio cover): max <b>${iMB} MB</b>, JPG / PNG / WebP. Hero image: at least 1600 px wide.<br>
+          <b>Hinglish:</b> Video ${vMB} MB se bada ya ${vMin} minute se lamba nahi hona chahiye. Phone ka 1080p video aksar ${vMB} MB se bada hota hai — pehle compress karein.<br><br>
+          <b>How to shrink a big video</b> (free): open <b>HandBrake</b> → preset <b>“Fast 720p30”</b> → Start. Or on a computer with ffmpeg:
+          <code>ffmpeg -i input.mp4 -vf scale=1280:-2 -c:v libx264 -crf 26 -maxrate 2M -bufsize 4M -c:a aac -b:a 96k -movflags +faststart output.mp4</code>
+          Rule of thumb: ${vMin} minutes fits in ${vMB} MB only if the video is about <b>2 Mbps or lower</b>.<br>
+          <b>WAV audio is huge</b> — convert it to MP3 first (free: Audacity, or any online “WAV to MP3”).<br><br>
+          • One file per language. If Gujarati/Hindi is empty, visitors automatically get the <b>English</b> file.<br>
+          • Instead of uploading you can <b>paste a direct https link</b> under each upload box. Clearing the link box removes that media.<br>
+          • Files above 6 MB upload in pieces (resumable). <b>Do not close this tab until the bar reaches 100%</b> and “Place saved successfully” appears.<br>
+          • The limit also depends on your Supabase plan (Free plan = 50 MB per file). To allow bigger files, upgrade Supabase and raise the limit in Supabase → Storage → Settings, then ask your developer to update the numbers at the top of this file.`;
+      }
+      function renderMediaRules() {
+        ["mediaRulesEditor", "mediaRulesSettings"].forEach((id) => {
+          if ($(id)) $(id).innerHTML = mediaRulesHTML();
+        });
+      }
+      function setUploadError(message) {
+        const box = $("uploadStatus"), wrap = $("uploadProgress");
+        if (box) {
+          box.textContent = "⚠ " + message;
+          box.classList.add("show", "err");
+          box.classList.remove("okmsg");
+        }
+        if (wrap) wrap.classList.remove("show");
+      }
+      async function validateMediaFile(file, expected) {
+        if (!file) return 0;
+        const kind = mediaKind(file);
+        if (!kind) throw new Error(`${file.name}: this file type is not supported. Use MP4 for video, MP3/M4A for audio, JPG/PNG/WebP for images.`);
+        if (expected && kind !== expected)
+          throw new Error(`${file.name}: please choose a ${expected} file here (this looks like a ${kind} file).`);
+        const maxBytes = kind === "video" ? MAX_VIDEO_BYTES : kind === "audio" ? MAX_AUDIO_BYTES : MAX_IMAGE_BYTES;
+        if (file.size > maxBytes)
+          throw new Error(`${file.name} is ${formatBytes(file.size)} but the maximum is ${formatBytes(maxBytes)}. ${kind === "video" ? "Compress it with HandBrake preset “Fast 720p30” first." : kind === "audio" ? "Convert it to MP3 first." : "Resize or compress the image first."}`);
+        if (kind === "image") return 0;
+        const duration = await getMediaDuration(file);
+        const maxSeconds = kind === "video" ? MAX_VIDEO_SECONDS : MAX_AUDIO_SECONDS;
+        if (duration > maxSeconds + 0.5)
+          throw new Error(`${file.name} is ${fmtDur(duration)} long. The maximum is ${Math.round(maxSeconds / 60)} minutes — please trim it first.`);
+        return duration;
+      }
+      function friendlyUploadError(err, file) {
+        const status = err?.originalResponse?.getStatus?.() ?? err?.statusCode ?? err?.status;
+        let body = "";
+        try { body = err?.originalResponse?.getBody?.() || ""; } catch {}
+        const raw = `${err?.message || err} ${body}`;
+        const name = file?.name || "File";
+        if (status == 413 || /exceeded the maximum allowed size|payload too large|too large/i.test(raw))
+          return `${name} (${formatBytes(file?.size)}) is bigger than the file-size limit set in Supabase Storage. Compress the file (see the limits box), or raise the limit in Supabase → Storage → Settings.`;
+        if (status == 401 || status == 403 || /row-level security|not authorized|unauthorized|jwt|permission/i.test(raw))
+          return `Upload not allowed. Log out and log in again. If it still fails, the Supabase storage policy must allow this admin e-mail to upload (run the SQL file that came with this update).`;
+        if (status == 404 || /bucket not found/i.test(raw))
+          return `Storage bucket not found. Create public buckets named exactly: images, videos, audio (Supabase → Storage).`;
+        if (status == 415 || /mime|not supported|invalid.*type/i.test(raw))
+          return `${name}: Supabase refused this file type (${mediaMime(file)}). Use MP4 / MP3 / JPG, or clear “Allowed MIME types” on the bucket.`;
+        if (/failed to fetch|network|timeout|offline/i.test(raw))
+          return `Internet connection dropped while uploading ${name}. Check your connection and press SAVE PLACE again.`;
+        return `${name}: ${String(err?.message || err)}`;
+      }
+      async function uploadMedia(file, bucket, folder) {
+        if (!file) return null;
+        const kind = bucket === "images" ? "image" : bucket === "videos" ? "video" : "audio";
+        await validateMediaFile(file, kind);
+        setUploadStatus(`Preparing ${file.name} (${formatBytes(file.size)})…`, 0);
+        try {
+          let result;
+          if (file.size > RESUMABLE_THRESHOLD) {
+            try {
+              result = await uploadMediaResumable(file, bucket, folder);
+            } catch (e) {
+              const st = e?.originalResponse?.getStatus?.();
+              const hard = [401, 403, 404, 413, 415].includes(st);
+              if (hard) throw e;
+              // Unexpected problem with the resumable endpoint: try the normal upload once.
+              setUploadStatus(`Switching to standard upload for ${file.name}…`, 5);
+              result = await uploadMediaStandard(file, bucket, folder);
+            }
+          } else {
+            setUploadStatus(`Uploading ${file.name} (${formatBytes(file.size)})… please wait`, 30);
+            result = await uploadMediaStandard(file, bucket, folder);
+          }
+          setUploadStatus(`Uploaded ${file.name}`, 100);
+          return result;
+        } catch (err) {
+          const msg = friendlyUploadError(err, file);
+          setUploadError(msg);
+          throw new Error(msg);
+        }
+      }
+
+      // ---- extra inputs (paste-a-link boxes + live file check) ----
+      function injectMediaExtras() {
+        MEDIA_FIELDS.forEach((f) => {
+          const input = $(f.id);
+          if (!input || $(f.urlId)) return;
+          const box = document.createElement("div");
+          box.innerHTML = `<div id="info_${f.id}" class="fileinfo"></div><input id="${f.urlId}" class="urlbox" placeholder="…or paste a direct https link (current file shows here; clear it to remove)" />`;
+          input.parentElement.appendChild(box);
+          input.addEventListener("change", async () => {
+            const file = input.files[0], info = $(`info_${f.id}`);
+            info.className = "fileinfo";
+            if (!file) { info.textContent = ""; return; }
+            info.textContent = "Checking file…";
+            try {
+              const dur = await validateMediaFile(file, f.kind);
+              const warns = [];
+              if (f.kind === "video" && !dur) warns.push("Could not read the video length — make sure it is an MP4 (H.264); some phone formats will not play in browsers.");
+              if (f.kind === "video" && !["mp4", "m4v", "webm"].includes(fileExt(file))) warns.push("MP4 is the safest format for all phones.");
+              if (f.kind === "audio" && fileExt(file) === "wav" && file.size > 8 * 1048576) warns.push("WAV is large — MP3 will load much faster for visitors.");
+              info.textContent = `✓ ${file.name} — ${formatBytes(file.size)}${dur ? " · " + fmtDur(dur) : ""} — OK` + (warns.length ? "  ⚠ " + warns.join(" ") : "");
+              info.classList.add(warns.length ? "warn" : "ok");
+              if (f.kind === "image" && $("preview") && f.id === "image") imagePreview(input);
+            } catch (e) {
+              info.textContent = "✗ " + (e.message || e);
+              info.classList.add("bad");
+              input.value = "";
+            }
+          });
+        });
+        if ($("url_image")) $("url_image").addEventListener("input", (e) => {
+          const v = e.target.value.trim();
+          if (/^https?:\/\//i.test(v)) { $("preview").src = v; $("preview").classList.add("show"); }
+        });
+      }
+      function clearMediaExtras() {
+        MEDIA_FIELDS.forEach((f) => {
+          if ($(f.urlId)) $(f.urlId).value = "";
+          if ($(`info_${f.id}`)) { $(`info_${f.id}`).textContent = ""; $(`info_${f.id}`).className = "fileinfo"; }
+        });
+      }
+      function prefillMediaUrls(obj, onlyNonEmpty = false) {
+        MEDIA_FIELDS.forEach((f) => {
+          const v = String(obj?.[f.key] || "");
+          if ($(f.urlId) && (v || !onlyNonEmpty)) $(f.urlId).value = v;
+        });
+      }
+
+      // =====================================================================
+      // SMART JSON IMPORT - understands many key styles & nested languages
+      // =====================================================================
+      const IMPORT_FIELDS = {
+        title: ["title", "name", "placename"],
+        about: ["about", "description", "overview", "intro", "introduction", "summary"],
+        history: ["history", "historicalstory", "historicalbackground", "story"],
+        architecture: ["architecture", "architecturaldetails", "architecturalfeatures"],
+        important_facts: ["importantfacts", "importantfact", "facts", "keyfacts", "quickfacts", "fact", "importantpoints"],
+        why_it_matters: ["whyitmatters", "whyitmatter", "whymatters", "whyimportant", "why", "significance", "relevance", "importance", "whyitmattertoday"],
+        connection_title: ["connectiontitle", "connectionheading", "connectionhead", "connectionname", "connectiontopic"],
+        connection_text: ["connectiontext", "connection", "connectiondescription", "connectionbody", "connectiondetails", "connectioncontent"],
+      };
+      const IMPORT_LANGS = { en: ["en", "eng", "english"], gu: ["gu", "guj", "gujarati"], hi: ["hi", "hin", "hindi"] };
+      const normKey = (k) => String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
+      function langOf(nk) {
+        for (const [l, names] of Object.entries(IMPORT_LANGS)) if (names.includes(nk)) return l;
+        return null;
+      }
+      function fieldLangOf(nk) {
+        for (const [field, aliases] of Object.entries(IMPORT_FIELDS))
+          for (const a of aliases) {
+            if (nk === a) return { field, lang: null };
+            for (const [l, names] of Object.entries(IMPORT_LANGS))
+              for (const n of names) if (nk === a + n || nk === n + a) return { field, lang: l };
+          }
+        return null;
+      }
+      function importText(v) {
+        if (v === undefined || v === null) return "";
+        if (Array.isArray(v))
+          return v.map((x) => (x && typeof x === "object" ? Object.values(x).filter((y) => typeof y === "string").join(" — ") : String(x))).filter(Boolean).join("\n");
+        if (typeof v === "object") return "";
+        return String(v);
+      }
+      function normalizeImportData(data) {
+        const out = { ...data };
+        const put = (field, lang, value) => {
+          const text = importText(value).trim();
+          if (!text) return;
+          const key = `${field}_${lang || "en"}`;
+          if (!String(out[key] ?? "").trim()) out[key] = text;
+        };
+        const walk = (obj, ctx, depth) => {
+          if (!obj || typeof obj !== "object" || depth > 4) return;
+          for (const [k, v] of Object.entries(obj)) {
+            const nk = normKey(k);
+            const isPlain = v && typeof v === "object" && !Array.isArray(v);
+            const kl = langOf(nk);
+            const fl = fieldLangOf(nk);
+            if (isPlain) {
+              if (kl) walk(v, { ...ctx, lang: kl }, depth + 1);
+              else if (fl) walk(v, { lang: fl.lang || ctx.lang, field: nk === "connection" ? "connection" : fl.field }, depth + 1);
+              else walk(v, ctx, depth + 1);
+              continue;
+            }
+            if (ctx.field) {
+              if (kl) { put(ctx.field === "connection" ? "connection_text" : ctx.field, kl, v); continue; }
+              if (ctx.field === "connection") {
+                if (["title", "heading", "name", "head"].includes(nk)) { put("connection_title", ctx.lang, v); continue; }
+                if (["text", "body", "description", "content", "details"].includes(nk)) { put("connection_text", ctx.lang, v); continue; }
+              }
+            }
+            if (fl) put(fl.field, ctx.lang || fl.lang, v);
+          }
+        };
+        walk(data, {}, 0);
+        // flat-title aliases the original importer does not know
+        if (!String(out.title_en ?? "").trim()) put("title", "en", out.name || out.place_name || out.placeName);
+        return out;
+      }
+      function importReport() {
+        const groups = [
+          ["Important Facts", ["factsEn", "factsGu", "factsHi"]],
+          ["Why It Matters", ["whyEn", "whyGu", "whyHi"]],
+          ["Connection", ["connectionTextEn", "connectionTextGu", "connectionTextHi"]],
+        ];
+        const lines = groups.map(([name, ids]) => `${name}: ${["EN", "GU", "HI"].map((l, i) => ($(ids[i]).value.trim() ? l + " ✓" : l + " –")).join("  ")}`);
+        const missingEn = groups.filter(([, ids]) => !$(ids[0]).value.trim()).map(([n]) => n);
+        const msg = `JSON imported.  ${lines.join("   |   ")}` + (missingEn.length ? `\nEnglish is empty for: ${missingEn.join(", ")} — please fill it before saving.` : "\nReview the fields, then press SAVE PLACE.");
+        const box = $("uploadStatus");
+        if (box) {
+          box.textContent = msg;
+          box.className = "upload-status show" + (missingEn.length ? " err" : " okmsg");
+          box.style.whiteSpace = "pre-line";
+        }
+        toast(missingEn.length ? "JSON imported — some bio sections are still empty (see below)." : "JSON imported. Review the fields, then SAVE PLACE.", 6000);
+      }
+
+      // =====================================================================
+      // SYSTEM CHECK (login, DB columns, storage buckets)
+      // =====================================================================
+      async function runSystemCheck() {
+        const out = $("systemCheckResult");
+        const row = (ok, text) => `<div class="checkrow ${ok ? "ok" : "bad"}">${esc(text)}</div>`;
+        out.innerHTML = '<div class="sub">Checking…</div>';
+        let html = "";
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        html += row(!!session?.user, session?.user ? `Logged in as ${session.user.email}` : "Not logged in — log out and log in again.");
+        const cols = "important_facts_en,important_facts_gu,important_facts_hi,why_it_matters_en,why_it_matters_gu,why_it_matters_hi,connection_title_en,connection_text_en,video_en,audio_en,audio_cover_en";
+        const dbq = await supabaseClient.from("heritage_places").select(cols).limit(1);
+        html += row(!dbq.error, dbq.error ? `Database problem: ${dbq.error.message} — run the SQL file (adds missing columns).` : "Database table and bio / media columns are present.");
+        const tiny = { images: ["check.png", "image/png"], videos: ["check.mp4", "video/mp4"], audio: ["check.mp3", "audio/mpeg"] };
+        for (const [bucket, [name, type]] of Object.entries(tiny)) {
+          const path = `_system-check/${Date.now()}-${name}`;
+          const up = await supabaseClient.storage.from(bucket).upload(path, new Blob(["viraasa-check"], { type }), { contentType: type, upsert: true });
+          if (up.error) html += row(false, `Bucket “${bucket}”: ${up.error.message}`);
+          else {
+            await supabaseClient.storage.from(bucket).remove([path]);
+            html += row(true, `Bucket “${bucket}”: upload works.`);
+          }
+        }
+        html += `<div class="sub" style="margin-top:10px">Maximum file size is also controlled by Supabase (Free plan = 50 MB). This check cannot read that setting.</div>`;
+        out.innerHTML = html;
+      }
+
+      init();
+    </script>
+  </body>
+</html>
