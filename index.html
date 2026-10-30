@@ -1,0 +1,2817 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VIRAASA • India's Heritage, Carried Forward</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts: Cormorant Garamond for editorial headings, Noto Serif for Indian scripts, Plus Jakarta Sans for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Noto+Serif+Devanagari:wght@400;600;700&family=Noto+Serif+Gujarati:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              deepBrown: "#4A2C1A",
+              warmBrown: "#8A6240",
+              heritageIvory: "#F5EFE4",
+              softCream: "#E9DDCA",
+              charcoalBrown: "#241A14",
+              antiqueGold: "#B08A52",
+              goldHover: "#98733E",
+            },
+            fontFamily: {
+              serif: [
+                "Cormorant Garamond",
+                "Noto Serif Devanagari",
+                "Noto Serif Gujarati",
+                "Georgia",
+                "serif",
+              ],
+              sans: ["Plus Jakarta Sans", "Inter", "sans-serif"],
+              devanagari: ["Noto Serif Devanagari", "serif"],
+              gujarati: ["Noto Serif Gujarati", "serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- VIRAASA Supabase public connection -->
+    <script>
+      const VIRAASA_SUPABASE_URL = "https://oegqphllucqywrykeqbs.supabase.co";
+      const VIRAASA_SUPABASE_KEY =
+        "sb_publishable_dfk_GhoYm_eRCw4qrjwN2A_CnoTH7qh";
+      const VIRAASA_AUTH_CLIENT = window.supabase.createClient(
+        VIRAASA_SUPABASE_URL,
+        VIRAASA_SUPABASE_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+          },
+        },
+      );
+    </script>
+    <style>
+      body {
+        background-color: #f5efe4;
+        color: #241a14;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      .font-editorial {
+        font-family:
+          "Cormorant Garamond", "Noto Serif Devanagari", "Noto Serif Gujarati",
+          Georgia, serif;
+      }
+
+      .lang-gu {
+        font-family:
+          "Noto Serif Gujarati", "Cormorant Garamond", serif !important;
+      }
+
+      .lang-hi {
+        font-family:
+          "Noto Serif Devanagari", "Cormorant Garamond", serif !important;
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #e9ddca;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #8a6240;
+        border-radius: 3px;
+      }
+
+      /* Gold gradient subtle border */
+      .gold-border {
+        border-color: rgba(176, 138, 82, 0.4);
+      }
+
+      /* Audio Wave Visualizer Animation */
+      .wave-bar {
+        width: 3px;
+        background-color: #b08a52;
+        border-radius: 2px;
+        animation: wavePulse 1.2s infinite ease-in-out alternate;
+      }
+      .wave-bar:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .wave-bar:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      .wave-bar:nth-child(4) {
+        animation-delay: 0.1s;
+      }
+      .wave-bar:nth-child(5) {
+        animation-delay: 0.5s;
+      }
+      .wave-paused .wave-bar {
+        animation-play-state: paused;
+        height: 6px !important;
+      }
+
+      @keyframes wavePulse {
+        0% {
+          height: 6px;
+        }
+        100% {
+          height: 28px;
+        }
+      }
+
+      /* Glassmorphism Heritage Card */
+      .heritage-card {
+        background: rgba(233, 221, 202, 0.6);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(176, 138, 82, 0.3);
+        transition: all 0.3s ease;
+      }
+      .heritage-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px -8px rgba(74, 44, 26, 0.15);
+        border-color: rgba(176, 138, 82, 0.7);
+      }
+
+      /* Hide scrollbars for clean horizontal slider */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen flex flex-col selection:bg-antiqueGold selection:text-white"
+  >
+    <div
+      id="qrScanOverlay"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-charcoalBrown/95 p-4 transition-opacity duration-500"
+    >
+      <div
+        class="w-full max-w-md bg-heritageIvory border-2 border-antiqueGold rounded-2xl p-6 sm:p-8 shadow-2xl text-center space-y-6 relative overflow-hidden"
+      >
+        <!-- Subtle Gold Decorative Corner Motifs -->
+        <div
+          class="absolute top-2 left-2 text-antiqueGold/40 text-xl font-editorial"
+        >
+          ❖
+        </div>
+        <div
+          class="absolute top-2 right-2 text-antiqueGold/40 text-xl font-editorial"
+        >
+          ❖
+        </div>
+        <div
+          class="absolute bottom-2 left-2 text-antiqueGold/40 text-xl font-editorial"
+        >
+          ❖
+        </div>
+        <div
+          class="absolute bottom-2 right-2 text-antiqueGold/40 text-xl font-editorial"
+        >
+          ❖
+        </div>
+
+        <!-- Brand Logo & Header -->
+        <div class="space-y-2 pt-2">
+          <div class="inline-block border-b-2 border-antiqueGold pb-1">
+            <span
+              class="text-xs uppercase tracking-[0.3em] font-semibold text-warmBrown"
+              >VIRAASA HERITAGE BOTTLE</span
+            >
+          </div>
+          <h1
+            class="text-3xl sm:text-4xl font-bold text-deepBrown tracking-wide"
+          >
+            WELCOME TO VIRAASA
+          </h1>
+          <p
+            class="text-xs sm:text-sm text-charcoalBrown/80 italic font-editorial"
+          >
+            “India’s Heritage, Carried Forward”
+          </p>
+        </div>
+
+        <div class="py-2 border-y border-antiqueGold/30">
+          <p
+            class="text-xs uppercase tracking-wider text-deepBrown font-bold mb-3"
+          >
+            Choose Your Language / ભાષા પસંદ કરો / भाषा चुनें
+          </p>
+
+          <!-- Language Options Grid -->
+          <div class="space-y-2.5">
+            <button
+              onclick="selectInitialLang('gu')"
+              id="btn-lang-gu"
+              class="lang-btn w-full py-3 px-4 rounded-xl border-2 border-antiqueGold/40 bg-softCream hover:bg-deepBrown hover:text-heritageIvory text-deepBrown font-semibold text-sm flex items-center justify-between transition-all group"
+            >
+              <span class="font-gujarati text-base">ગુજરાતી</span>
+              <span class="text-xs opacity-70 group-hover:opacity-100"
+                >Gujarati</span
+              >
+            </button>
+
+            <button
+              onclick="selectInitialLang('hi')"
+              id="btn-lang-hi"
+              class="lang-btn w-full py-3 px-4 rounded-xl border-2 border-antiqueGold/40 bg-softCream hover:bg-deepBrown hover:text-heritageIvory text-deepBrown font-semibold text-sm flex items-center justify-between transition-all group"
+            >
+              <span class="font-devanagari text-base">हिन्दी</span>
+              <span class="text-xs opacity-70 group-hover:opacity-100"
+                >Hindi</span
+              >
+            </button>
+
+            <button
+              onclick="selectInitialLang('en')"
+              id="btn-lang-en"
+              class="lang-btn w-full py-3 px-4 rounded-xl border-2 border-antiqueGold bg-deepBrown text-heritageIvory font-semibold text-sm flex items-center justify-between transition-all group shadow-md"
+            >
+              <span class="text-base font-serif">English</span>
+              <span class="text-xs text-antiqueGold">Selected</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Scanned Bottle Badge Info -->
+        <div
+          class="bg-softCream/80 p-3 rounded-xl border border-antiqueGold/30 text-left flex items-center gap-3"
+        >
+          <div
+            class="w-10 h-10 rounded-lg bg-deepBrown text-antiqueGold flex items-center justify-center shrink-0"
+          >
+            <i class="fa-solid fa-wine-bottle text-lg"></i>
+          </div>
+          <div class="text-xs">
+            <p class="font-bold text-deepBrown">Scanned Bottle Detected:</p>
+            <p id="qrPlaceSummary" class="text-charcoalBrown/90 font-medium">
+              Loading scanned place...
+            </p>
+          </div>
+        </div>
+
+        <!-- Unlock Button -->
+        <button
+          onclick="confirmInitialLanguage()"
+          class="w-full py-3.5 bg-deepBrown hover:bg-charcoalBrown text-heritageIvory border-2 border-antiqueGold rounded-xl font-bold text-sm tracking-wider uppercase transition-all shadow-lg flex items-center justify-center gap-2 group"
+        >
+          <span id="continueBtnText">CONTINUE →</span>
+        </button>
+      </div>
+    </div>
+
+    <header
+      class="sticky top-0 z-40 bg-heritageIvory/95 backdrop-blur-md border-b border-antiqueGold/40 shadow-sm"
+    >
+      <div
+        class="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-3"
+      >
+        <!-- VIRAASA BRAND → HOME -->
+        <a
+          href="javascript:void(0)"
+          onclick="showHome()"
+          class="flex items-center gap-2.5 group"
+        >
+          <div
+            class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-deepBrown border border-antiqueGold flex items-center justify-center text-antiqueGold shadow-md group-hover:scale-105 transition"
+          >
+            <i class="fa-solid fa-house text-base sm:text-lg"></i>
+          </div>
+          <div>
+            <span
+              class="text-xl sm:text-2xl font-bold text-deepBrown tracking-[0.2em] font-editorial block leading-none"
+              >VIRAASA</span
+            >
+            <span
+              class="text-[9px] sm:text-[10px] text-warmBrown tracking-widest font-semibold uppercase block"
+              >Heritage Collection</span
+            >
+          </div>
+        </a>
+
+        <!-- DESKTOP NAVIGATION -->
+        <nav class="hidden md:flex items-center gap-5 lg:gap-7">
+          <!-- HOME -->
+          <a
+            href="javascript:void(0)"
+            onclick="showHome()"
+            id="navHomeText"
+            class="text-sm font-semibold text-deepBrown hover:text-antiqueGold transition flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-house text-antiqueGold"></i>
+            <span>Home</span>
+          </a>
+
+          <!-- EXPLORE -->
+          <a
+            href="javascript:void(0)"
+            onclick="showExplore()"
+            id="navExploreText"
+            class="text-sm font-semibold text-deepBrown hover:text-antiqueGold transition flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-compass text-antiqueGold"></i>
+            Explore
+          </a>
+        </nav>
+
+        <!-- RIGHT ACTIONS -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- BACK BUTTON -->
+          <button
+            onclick="goBackOneStep()"
+            id="navBackButton"
+            class="hidden px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg border border-antiqueGold/60 text-deepBrown hover:bg-softCream text-xs sm:text-sm font-semibold transition items-center gap-1.5"
+          >
+            <i class="fa-solid fa-arrow-left text-antiqueGold"></i>
+            <span id="navBackText">Back</span>
+          </button>
+
+          <!-- LANGUAGE SELECTOR -->
+          <div class="relative">
+            <select
+              id="globalLangSelector"
+              onchange="changeLanguage(this.value)"
+              class="bg-softCream text-deepBrown font-semibold text-xs sm:text-sm py-1.5 sm:py-2 pl-3 pr-8 rounded-lg border border-antiqueGold/60 focus:outline-none focus:border-deepBrown appearance-none cursor-pointer"
+            >
+              <option value="en">English</option>
+              <option value="gu">ગુજરાતી</option>
+              <option value="hi">हिन्दी</option>
+            </select>
+
+            <i
+              class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-warmBrown pointer-events-none"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- MAIN HERITAGE CONTAINER -->
+    <main
+      class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-10 sm:space-y-14"
+    >
+      <!-- ==========================================
+     VIRAASA HOME PAGE
+     ========================================== -->
+      <section id="homeSection" class="space-y-8">
+        <!-- HOME HERO -->
+        <div
+          class="relative overflow-hidden rounded-3xl bg-deepBrown text-heritageIvory border border-antiqueGold/50 shadow-xl"
+        >
+          <div
+            class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_#B08A52,_transparent_45%)]"
+          ></div>
+
+          <div class="relative px-6 py-10 sm:px-10 sm:py-14 text-center">
+            <div
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-antiqueGold/50 bg-antiqueGold/10 text-antiqueGold text-xs font-semibold tracking-[0.2em] uppercase mb-5"
+            >
+              <i class="fa-solid fa-landmark"></i>
+              <span id="homeBadgeText">VIRAASA HERITAGE</span>
+            </div>
+
+            <h1
+              id="homeTitle"
+              class="font-editorial text-4xl sm:text-6xl font-bold leading-tight tracking-wide"
+            >
+              India's Heritage, Carried Forward
+            </h1>
+
+            <p
+              id="homeSubtitle"
+              class="mt-5 max-w-2xl mx-auto text-sm sm:text-base text-heritageIvory/80 leading-relaxed"
+            >
+              Every bottle carries a story. Discover India's heritage, one
+              place, one story and one bottle at a time.
+            </p>
+
+            <div class="mt-8 flex flex-wrap justify-center gap-3">
+              <a
+                href="javascript:void(0)"
+                onclick="showExplore()"
+                id="homeExploreButton"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-antiqueGold hover:bg-goldHover text-white font-semibold text-sm transition shadow-lg"
+              >
+                <i class="fa-solid fa-compass"></i>
+                <span id="homeExploreButtonText">Explore Heritage</span>
+              </a>
+
+              <a
+                href="#aboutViraasa"
+                id="homeAboutButton"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-antiqueGold/60 hover:bg-white/10 text-heritageIvory font-semibold text-sm transition"
+              >
+                <i class="fa-solid fa-circle-info"></i>
+                <span>About VIRAASA</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIRAASA INTRODUCTION -->
+
+        <!-- HOME MESSAGE -->
+        <div class="text-center py-2">
+          <p
+            id="homeStoryLine"
+            class="font-editorial italic text-xl sm:text-2xl text-deepBrown"
+          >
+            “Every Bottle Has a Story”
+          </p>
+
+          <div class="w-16 h-px bg-antiqueGold mx-auto mt-4"></div>
+        </div>
+
+        <!-- EXPLORE SECTION INTRO -->
+        <div class="pt-4">
+          <div
+            class="flex flex-col sm:flex-row sm:items-end justify-between gap-3"
+          >
+            <div>
+              <span
+                id="homeExploreEyebrow"
+                class="text-xs uppercase tracking-[0.25em] text-antiqueGold font-bold"
+              >
+                DISCOVER
+              </span>
+
+              <h2
+                id="homeExploreTitle"
+                class="mt-1 text-3xl sm:text-4xl font-bold text-deepBrown"
+              >
+                Explore India's Heritage
+              </h2>
+
+              <p
+                id="homeExploreDescription"
+                class="mt-2 text-sm text-charcoalBrown/65 max-w-2xl"
+              >
+                Explore places, stories and heritage featured through VIRAASA.
+              </p>
+            </div>
+
+            <a
+              href="javascript:void(0)"
+              onclick="showExplore()"
+              class="text-sm font-semibold text-antiqueGold hover:text-goldHover transition"
+            >
+              <span id="homeExploreAllText">View All</span>
+              <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             ALL HERITAGE STORIES
+             ========================================== -->
+        <section id="catalogSection" class="space-y-6 pt-4">
+          <div class="text-center space-y-2">
+            <span
+              class="text-xs font-bold text-warmBrown uppercase tracking-[0.2em]"
+              >DIGITAL HERITAGE CATALOG</span
+            >
+            <h2
+              class="text-3xl sm:text-4xl font-bold text-deepBrown font-editorial flex items-center justify-center gap-3"
+            >
+              <i
+                class="fa-solid fa-compass text-antiqueGold text-2xl sm:text-3xl"
+              ></i>
+              <span id="catalogHeading">ALL STORIES</span>
+            </h2>
+            <div class="w-16 h-0.5 bg-antiqueGold mx-auto"></div>
+            <p
+              id="catalogSubheading"
+              class="text-xs sm:text-sm text-charcoalBrown/70 max-w-2xl mx-auto leading-relaxed"
+            >
+              Discover every VIRAASA heritage story. Search a place, open its
+              story, then come back to continue exploring.
+            </p>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="max-w-2xl mx-auto relative">
+            <i
+              class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-warmBrown text-sm"
+            ></i>
+            <input
+              type="text"
+              id="searchInput"
+              onkeyup="filterCatalog()"
+              placeholder="SEARCH PLACES, STORIES & HISTORY..."
+              class="w-full pl-11 pr-4 py-3 bg-softCream border-2 border-antiqueGold/60 rounded-2xl text-sm text-deepBrown placeholder-warmBrown/70 focus:outline-none focus:border-deepBrown shadow-sm"
+            />
+          </div>
+
+          <!-- Filter Categories Horizontal Slider -->
+          <div
+            class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar"
+          >
+            <button
+              onclick="setCategoryFilter('ALL')"
+              class="cat-pill active-pill px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap bg-deepBrown text-heritageIvory border border-antiqueGold"
+            >
+              ALL
+            </button>
+            <button
+              onclick="setCategoryFilter('GUJARAT HERITAGE')"
+              class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+            >
+              GUJARAT HERITAGE
+            </button>
+            <button
+              onclick="setCategoryFilter('TEMPLES & ARCHITECTURE')"
+              class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+            >
+              TEMPLES & ARCHITECTURE
+            </button>
+            <button
+              onclick="setCategoryFilter('FORTS & PALACES')"
+              class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+            >
+              FORTS & PALACES
+            </button>
+            <button
+              onclick="setCategoryFilter('ANCIENT INDIA')"
+              class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+            >
+              ANCIENT INDIA
+            </button>
+            <button
+              onclick="setCategoryFilter('CULTURE & TRADITIONS')"
+              class="cat-pill px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+            >
+              CULTURE & TRADITIONS
+            </button>
+          </div>
+
+          <!-- Monument Cards Grid -->
+          <div
+            id="monumentGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            <!-- Monument cards loaded dynamically -->
+          </div>
+        </section>
+
+        <!-- ==========================================
+             REVIEWS & SHARE
+             ========================================== -->
+        <section
+          id="socialSection"
+          class="bg-softCream border-2 border-antiqueGold/40 rounded-2xl p-6 space-y-6"
+        >
+          <div
+            class="flex flex-wrap items-center justify-between gap-4 border-b border-antiqueGold/30 pb-4"
+          >
+            <!-- Like Button -->
+            <button
+              onclick="toggleStoryLike()"
+              id="likeBtn"
+              class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-heritageIvory hover:bg-deepBrown hover:text-heritageIvory border-2 border-antiqueGold text-deepBrown font-bold text-sm transition-all shadow-sm active:scale-95"
+            >
+              <i
+                class="fa-regular fa-heart text-lg text-antiqueGold"
+                id="likeIcon"
+              ></i>
+              <span id="likeBtnText">LIKE VIRAASA</span>
+              <span
+                id="likeCount"
+                class="bg-antiqueGold/20 text-deepBrown text-xs px-2 py-0.5 rounded-full font-mono ml-1"
+                >0</span
+              >
+              >
+            </button>
+
+            <!-- Share Button -->
+            <button
+              onclick="openShareModal()"
+              class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-deepBrown hover:bg-charcoalBrown text-heritageIvory border-2 border-antiqueGold text-sm font-bold transition-all shadow-sm"
+            >
+              <i class="fa-solid fa-arrow-up-from-bracket text-antiqueGold"></i>
+              <span id="shareBtnText">SHARE VIRAASA</span>
+            </button>
+          </div>
+
+          <!-- Comment Section -->
+          <div class="space-y-4">
+            <h4
+              class="text-lg font-bold text-deepBrown font-editorial flex items-center gap-2"
+            >
+              <i class="fa-regular fa-comments text-antiqueGold"></i>
+              <span id="commentsHeading">REVIEWS & YOUR EXPERIENCE</span>
+            </h4>
+
+            <!-- Comment Form -->
+            <form onsubmit="postComment(event)" class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  id="commentAuthor"
+                  required
+                  placeholder="Your Name / તમારું નામ / आपका नाम"
+                  class="bg-heritageIvory border border-antiqueGold/60 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-deepBrown focus:outline-none focus:border-deepBrown"
+                />
+                <input
+                  type="text"
+                  id="commentLocation"
+                  placeholder="City or Region (e.g. Ahmedabad)"
+                  class="bg-heritageIvory border border-antiqueGold/60 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-deepBrown focus:outline-none focus:border-deepBrown"
+                />
+              </div>
+              <textarea
+                id="commentText"
+                required
+                rows="2"
+                placeholder="Share your thoughts about VIRAASA or a heritage story..."
+                class="w-full bg-heritageIvory border border-antiqueGold/60 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-deepBrown focus:outline-none focus:border-deepBrown"
+              ></textarea>
+
+              <div class="flex justify-end">
+                <button
+                  type="submit"
+                  class="px-5 py-2 rounded-xl bg-deepBrown hover:bg-charcoalBrown text-heritageIvory text-xs font-bold tracking-wider uppercase border border-antiqueGold transition"
+                >
+                  Post Comment
+                </button>
+              </div>
+            </form>
+
+            <!-- Comments List -->
+            <div id="commentsList" class="space-y-3 pt-2"></div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             ABOUT VIRAASA
+             ========================================== -->
+        <section id="aboutViraasa" class="heritage-card rounded-3xl p-6 sm:p-8">
+          <div class="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <span
+                id="homeIntroEyebrow"
+                class="text-xs uppercase tracking-[0.25em] text-antiqueGold font-bold"
+              >
+                OUR IDEA
+              </span>
+
+              <h2
+                id="homeIntroTitle"
+                class="mt-2 text-3xl sm:text-4xl font-bold text-deepBrown"
+              >
+                More Than Just a Bottle
+              </h2>
+
+              <p
+                id="homeIntroText"
+                class="mt-4 text-sm sm:text-base text-charcoalBrown/75 leading-relaxed"
+              >
+                VIRAASA transforms a simple water bottle into a medium for
+                discovering India's heritage. Each featured bottle can connect
+                people to the history, stories and places behind the image
+                through a simple QR experience.
+              </p>
+
+              <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div
+                  class="rounded-2xl bg-heritageIvory border border-antiqueGold/20 p-4"
+                >
+                  <i
+                    class="fa-solid fa-bottle-water text-antiqueGold text-xl"
+                  ></i>
+                  <p
+                    id="homeFeature1"
+                    class="mt-2 text-xs font-semibold text-deepBrown"
+                  >
+                    A Bottle With a Story
+                  </p>
+                </div>
+
+                <div
+                  class="rounded-2xl bg-heritageIvory border border-antiqueGold/20 p-4"
+                >
+                  <i class="fa-solid fa-qrcode text-antiqueGold text-xl"></i>
+                  <p
+                    id="homeFeature2"
+                    class="mt-2 text-xs font-semibold text-deepBrown"
+                  >
+                    Scan & Discover
+                  </p>
+                </div>
+
+                <div
+                  class="rounded-2xl bg-heritageIvory border border-antiqueGold/20 p-4"
+                >
+                  <i class="fa-solid fa-book-open text-antiqueGold text-xl"></i>
+                  <p
+                    id="homeFeature3"
+                    class="mt-2 text-xs font-semibold text-deepBrown"
+                  >
+                    Learn 1% More
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- PREMIUM BOTTLE VISUAL -->
+            <div
+              class="relative min-h-[300px] rounded-3xl bg-softCream overflow-hidden flex items-center justify-center border border-antiqueGold/30"
+            >
+              <!-- VIRAASA bottle brand visual -->
+              <div class="relative">
+                <div
+                  class="w-28 sm:w-32 h-64 sm:h-72 rounded-[2rem] bg-gradient-to-b from-white via-heritageIvory to-softCream border-2 border-antiqueGold/60 shadow-2xl relative overflow-hidden"
+                >
+                  <div
+                    class="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-7 bg-deepBrown rounded-b-lg border-x border-b border-antiqueGold"
+                  ></div>
+
+                  <div
+                    class="absolute top-20 left-3 right-3 rounded-xl bg-deepBrown text-heritageIvory text-center py-5 px-2 border border-antiqueGold"
+                  >
+                    <div class="text-[9px] tracking-[0.2em] text-antiqueGold">
+                      HERITAGE
+                    </div>
+
+                    <div class="font-editorial text-xl font-bold mt-1">
+                      VIRAASA
+                    </div>
+
+                    <div class="text-[8px] mt-2 text-heritageIvory/70">
+                      INDIA'S HERITAGE
+                    </div>
+                  </div>
+
+                  <div
+                    class="absolute bottom-5 left-0 right-0 text-center text-[8px] tracking-widest text-warmBrown"
+                  >
+                    CARRIED FORWARD
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="absolute top-5 right-5 text-antiqueGold/30 text-4xl font-editorial"
+              >
+                ❖
+              </div>
+
+              <div
+                class="absolute bottom-5 left-5 text-antiqueGold/30 text-4xl font-editorial"
+              >
+                ❖
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- =========================
+       EXISTING PLACE DETAIL
+       ========================= -->
+
+      <section id="hero" class="space-y-6">
+        <div
+          class="bg-softCream p-4 sm:p-5 rounded-2xl border-2 border-antiqueGold/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        >
+          <div class="space-y-1">
+            <div
+              class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-deepBrown text-antiqueGold text-[11px] font-semibold tracking-wider uppercase"
+            >
+              <i class="fa-solid fa-qrcode text-[10px]"></i> VIRAASA • INDIA
+              HERITAGE COLLECTION
+            </div>
+            <h2
+              class="text-sm sm:text-base font-bold text-deepBrown"
+              id="scannedBadgeSubtitle"
+            >
+              You scanned a VIRAASA bottle. Now discover the story behind it.
+            </h2>
+          </div>
+
+          <div
+            class="flex items-center gap-2 bg-heritageIvory px-3 py-1.5 rounded-xl border border-antiqueGold/30 shrink-0 text-xs font-medium text-warmBrown"
+          >
+            <i class="fa-solid fa-bottle-water text-deepBrown"></i>
+            <span>VIRAASA Heritage Series</span>
+          </div>
+        </div>
+
+        <!-- Monument Header & Hero Imagery -->
+        <div
+          class="relative rounded-3xl overflow-hidden border-2 border-antiqueGold/60 shadow-xl bg-charcoalBrown group"
+        >
+          <div class="relative h-72 sm:h-96 w-full">
+            <img
+              id="heroImage"
+              src="https://images.unsplash.com/photo-1600100397608-f010e423b971?auto=format&fit=crop&w=1200&q=80"
+              alt="VIRAASA Heritage Place"
+              class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-charcoalBrown via-charcoalBrown/40 to-transparent"
+            ></div>
+          </div>
+
+          <!-- Overlay Details -->
+          <div
+            class="absolute bottom-0 inset-x-0 p-6 sm:p-8 space-y-2 text-heritageIvory"
+          >
+            <div
+              class="flex flex-wrap items-center gap-2 text-xs font-medium text-antiqueGold"
+            >
+              <span id="heroLocationBadge"
+                ><i class="fa-solid fa-location-dot mr-1"></i
+              ></span>
+              <span>•</span>
+              <span id="heroEraBadge"></span>
+            </div>
+
+            <h1
+              id="heroTitle"
+              class="text-3xl sm:text-5xl font-bold font-editorial tracking-wide text-white"
+            >
+              VIRAASA HERITAGE
+            </h1>
+
+            <p
+              id="heroTagline"
+              class="text-xs sm:text-sm text-heritageIvory/90 max-w-2xl font-editorial italic leading-relaxed"
+            >
+              Discover the story of this heritage place.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="videoSection" class="space-y-4">
+        <div
+          class="flex items-center justify-between border-b border-antiqueGold/40 pb-3"
+        >
+          <h3
+            class="text-xl sm:text-2xl font-bold text-deepBrown flex items-center gap-2.5 font-editorial"
+          >
+            <i class="fa-solid fa-circle-play text-antiqueGold text-lg"></i>
+            <span id="videoSectionTitle">WATCH THE HERITAGE STORY</span>
+          </h3>
+          <span class="text-xs text-warmBrown italic font-editorial"
+            >Documentary Mode</span
+          >
+        </div>
+
+        <!-- Custom Video Player Window -->
+        <div
+          class="bg-charcoalBrown border-2 border-antiqueGold rounded-2xl overflow-hidden shadow-2xl relative group"
+        >
+          <!-- Video Screen -->
+          <div
+            class="relative aspect-video bg-black flex items-center justify-center overflow-hidden"
+          >
+            <video
+              id="mainVideo"
+              class="w-full h-full object-contain bg-black"
+              playsinline
+              webkit-playsinline
+              preload="metadata"
+            >
+              Your browser does not support video playback.
+            </video>
+            <div
+              id="videoEmptyNote"
+              class="hidden absolute inset-0 flex-col items-center justify-center gap-2 bg-charcoalBrown/80 text-heritageIvory text-center px-6"
+            >
+              <i class="fa-solid fa-film text-3xl text-antiqueGold"></i>
+              <span id="videoEmptyText" class="text-sm">Video for this place is coming soon.</span>
+            </div>
+
+            <!-- On-screen Subtitle Overlay -->
+            <div
+              id="subtitleOverlay"
+              class="absolute bottom-12 inset-x-4 text-center pointer-events-none transition-opacity duration-300"
+            >
+              <span
+                id="subtitleText"
+                class="inline-block bg-charcoalBrown/90 text-heritageIvory border border-antiqueGold/40 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-serif shadow-lg"
+              >
+                &nbsp;
+              </span>
+            </div>
+
+            <!-- Big Central Play Button Overlay -->
+            <button
+              onclick="toggleVideoPlay()"
+              id="centralVideoPlayBtn"
+              class="absolute w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-deepBrown/90 border-2 border-antiqueGold text-antiqueGold hover:text-white hover:scale-110 flex items-center justify-center transition-all shadow-2xl"
+            >
+              <i
+                class="fa-solid fa-play text-xl sm:text-2xl ml-1"
+                id="centralPlayIcon"
+              ></i>
+            </button>
+          </div>
+
+          <!-- Video Controls Bar -->
+          <div
+            class="bg-charcoalBrown p-3 sm:p-4 border-t border-antiqueGold/30 space-y-2 text-heritageIvory"
+          >
+            <!-- Progress Bar -->
+            <div class="flex items-center gap-2">
+              <span
+                id="videoCurrentTime"
+                class="text-[11px] font-mono text-antiqueGold"
+                >00:00</span
+              >
+              <input
+                type="range"
+                id="videoSeeker"
+                min="0"
+                max="100"
+                value="0"
+                class="flex-1 h-1.5 bg-warmBrown/40 rounded-lg appearance-none cursor-pointer accent-antiqueGold"
+              />
+              <span
+                id="videoDuration"
+                class="text-[11px] font-mono text-warmBrown"
+                >00:00</span
+              >
+            </div>
+
+            <!-- Control Buttons Row -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <div class="flex items-center gap-3">
+                <button
+                  onclick="toggleVideoPlay()"
+                  class="text-antiqueGold hover:text-white transition"
+                >
+                  <i class="fa-solid fa-play text-base" id="videoPlayIcon"></i>
+                </button>
+
+                <!-- Volume Control -->
+                <div class="flex items-center gap-1.5">
+                  <button
+                    onclick="toggleVideoMute()"
+                    class="text-warmBrown hover:text-heritageIvory transition"
+                  >
+                    <i
+                      class="fa-solid fa-volume-high text-xs"
+                      id="videoVolumeIcon"
+                    ></i>
+                  </button>
+                  <input
+                    type="range"
+                    id="videoVolume"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value="1"
+                    oninput="changeVideoVolume(this.value)"
+                    class="w-14 sm:w-20 h-1 bg-warmBrown/40 rounded appearance-none cursor-pointer accent-antiqueGold"
+                  />
+                </div>
+              </div>
+
+              <!-- Dropdowns: Language, Captions, Quality, Fullscreen -->
+              <div class="flex items-center gap-2 text-xs">
+                <!-- Captions Toggle Button -->
+                <button
+                  onclick="toggleCaptions()"
+                  id="ccBtn"
+                  class="px-2 py-1 rounded bg-deepBrown border border-antiqueGold/50 text-antiqueGold font-bold text-[10px] hover:bg-warmBrown hover:text-white transition"
+                >
+                  CC
+                </button>
+
+                
+
+                <!-- Video Audio Track / Language Selector -->
+                <select
+                  id="videoLangSelector"
+                  onchange="changeVideoLanguage(this.value)"
+                  class="bg-deepBrown text-antiqueGold text-[11px] font-semibold py-1 px-2 rounded border border-antiqueGold/50 focus:outline-none"
+                >
+                  <option value="en">English Audio</option>
+                  <option value="gu">ગુજરાતી Audio</option>
+                  <option value="hi">हिन्दी Audio</option>
+                </select>
+
+                <!-- Fullscreen -->
+                <button
+                  onclick="toggleVideoFullscreen()"
+                  class="text-warmBrown hover:text-heritageIvory transition ml-1"
+                >
+                  <i class="fa-solid fa-expand text-xs"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="audioSection" class="space-y-4">
+        <div
+          class="flex items-center justify-between border-b border-antiqueGold/40 pb-3"
+        >
+          <h3
+            class="text-xl sm:text-2xl font-bold text-deepBrown flex items-center gap-2.5 font-editorial"
+          >
+            <i class="fa-solid fa-headphones text-antiqueGold text-lg"></i>
+            <span id="audioSectionTitle">LISTEN TO THE STORY</span>
+          </h3>
+          <span class="text-xs text-warmBrown italic font-editorial"
+            >Museum Audio Guide</span
+          >
+        </div>
+
+        <!-- Audio Player Card -->
+        <div
+          class="bg-softCream border-2 border-antiqueGold/60 rounded-2xl p-5 sm:p-6 shadow-md space-y-4"
+        >
+          <div class="flex flex-col sm:flex-row items-center gap-4">
+            <!-- Artwork Thumbnail -->
+            <div
+              class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-antiqueGold shrink-0 relative shadow"
+            >
+              <img
+                id="audioTrackCover"
+                src="https://images.unsplash.com/photo-1600100397608-f010e423b971?auto=format&fit=crop&w=400&q=80"
+                alt="Audio Guide Cover"
+                class="w-full h-full object-cover"
+              />
+              <div class="absolute inset-0 bg-deepBrown/20"></div>
+            </div>
+
+            <!-- Track Info & Visualizer -->
+            <div class="flex-1 text-center sm:text-left space-y-1 w-full">
+              <div
+                class="inline-block px-2 py-0.5 rounded bg-deepBrown/10 text-deepBrown text-[10px] font-bold uppercase tracking-wider"
+              >
+                AUDIO EPISODE #01
+              </div>
+              <h4
+                id="audioTrackTitle"
+                class="text-lg font-bold text-deepBrown font-editorial"
+              >
+                VIRAASA Heritage Audio Guide
+              </h4>
+              <p
+                id="audioTrackAuthor"
+                class="text-xs text-warmBrown font-medium"
+              >
+                Narrated by VIRAASA Cultural Historian
+              </p>
+
+              <!-- Animated Waveform Visualizer -->
+              <div
+                id="audioWaveVisualizer"
+                class="flex items-center justify-center sm:justify-start gap-1 h-7 pt-2 wave-paused"
+              >
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+              </div>
+            </div>
+
+            <!-- Audio Language Switcher -->
+            <div
+              class="shrink-0 bg-heritageIvory p-2 rounded-xl border border-antiqueGold/40 text-xs space-y-1"
+            >
+              <label
+                class="block text-[10px] font-bold text-warmBrown uppercase"
+                >Guide Language</label
+              >
+              <select
+                id="audioLangSelector"
+                onchange="changeAudioLanguage(this.value)"
+                class="bg-softCream text-deepBrown font-semibold rounded px-2 py-1 border border-antiqueGold focus:outline-none"
+              >
+                <option value="en">English</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="hi">हिन्दी</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Main Audio Controls -->
+          <div class="space-y-2 pt-2 border-t border-antiqueGold/30">
+            <div class="flex items-center justify-center gap-5 py-1">
+              <button
+                onclick="seekAudio(-10)"
+                title="Rewind 10s"
+                class="text-deepBrown hover:text-warmBrown transition"
+              >
+                <i class="fa-solid fa-rotate-left text-base"></i>
+              </button>
+
+              <button
+                onclick="toggleAudioPlay()"
+                id="audioPlayBtn"
+                class="w-12 h-12 rounded-full bg-deepBrown hover:bg-charcoalBrown text-antiqueGold border-2 border-antiqueGold flex items-center justify-center shadow-md transition active:scale-95"
+              >
+                <i
+                  class="fa-solid fa-play text-base ml-0.5"
+                  id="audioPlayIcon"
+                ></i>
+              </button>
+
+              <button
+                onclick="seekAudio(10)"
+                title="Forward 10s"
+                class="text-deepBrown hover:text-warmBrown transition"
+              >
+                <i class="fa-solid fa-rotate-right text-base"></i>
+              </button>
+            </div>
+
+            <!-- Audio Progress Seeker -->
+            <div class="flex items-center gap-3">
+              <span
+                id="audioCurrentTime"
+                class="text-[11px] font-mono text-deepBrown w-10 text-right"
+                >00:00</span
+              >
+              <input
+                type="range"
+                id="audioSeeker"
+                min="0"
+                max="100"
+                value="0"
+                class="flex-1 h-1.5 bg-heritageIvory rounded-lg appearance-none cursor-pointer accent-deepBrown"
+              />
+              <span
+                id="audioDuration"
+                class="text-[11px] font-mono text-warmBrown w-10"
+                >00:00</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden Synthesizer Sound Element -->
+        <audio id="mainAudio" class="hidden" preload="metadata"></audio>
+      </section>
+
+      <section id="storySection" class="space-y-6">
+        <div class="border-b border-antiqueGold/40 pb-3">
+          <h3
+            class="text-xl sm:text-2xl font-bold text-deepBrown font-editorial flex items-center gap-2"
+          >
+            <i class="fa-solid fa-book-bookmark text-antiqueGold"></i>
+            <span id="storyMainTitle">HERITAGE STORY & HISTORICAL ARCHIVE</span>
+          </h3>
+        </div>
+
+        <!-- Story Navigation Tabs -->
+        <div
+          class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar border-b border-antiqueGold/30"
+        >
+          <button
+            onclick="switchStoryTab('about')"
+            id="tab-about"
+            class="story-tab active-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-deepBrown text-heritageIvory border border-antiqueGold"
+          >
+            ABOUT KIRTI TORAN
+          </button>
+          <button
+            onclick="switchStoryTab('history')"
+            id="tab-history"
+            class="story-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+          >
+            HISTORICAL STORY
+          </button>
+          <button
+            onclick="switchStoryTab('architecture')"
+            id="tab-architecture"
+            class="story-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+          >
+            ARCHITECTURE
+          </button>
+          <button
+            onclick="switchStoryTab('facts')"
+            id="tab-facts"
+            class="story-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+          >
+            IMPORTANT FACTS
+          </button>
+          <button
+            onclick="switchStoryTab('why')"
+            id="tab-why"
+            class="story-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+          >
+            WHY IT MATTERS
+          </button>
+          <button
+            onclick="switchStoryTab('vadnagar')"
+            id="tab-vadnagar"
+            class="story-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all bg-softCream text-deepBrown border border-antiqueGold/40 hover:bg-deepBrown/10"
+          >
+            VADNAGAR HERITAGE
+          </button>
+        </div>
+
+        <!-- Story Text Content Panes -->
+        <div
+          class="bg-softCream/70 border border-antiqueGold/40 rounded-2xl p-6 sm:p-8 shadow-sm"
+        >
+          <!-- Tab 1: About -->
+          <div id="pane-about" class="story-pane space-y-4">
+            <h4
+              class="text-2xl font-bold text-deepBrown font-editorial"
+              id="storyAboutHead"
+            >
+              Triumphant Symbol of Solanki Glory
+            </h4>
+            <p
+              class="text-sm sm:text-base leading-relaxed text-charcoalBrown font-editorial"
+              id="storyAboutBody1" style="white-space:pre-line"
+            >
+              This heritage place has a story preserved through VIRAASA. Open
+              the live record to discover its history, architecture, facts and
+              cultural connection.
+            </p>
+            <p
+              class="text-sm sm:text-base leading-relaxed text-charcoalBrown font-editorial"
+              id="storyAboutBody2" style="white-space:pre-line"
+            >
+              The live VIRAASA record provides the place-specific details stored
+              by the administrator.
+            </p>
+          </div>
+
+          <!-- Tab 2: History -->
+          <div id="pane-history" class="story-pane hidden space-y-4">
+            <h4
+              class="text-2xl font-bold text-deepBrown font-editorial"
+              id="storyHistoryHead"
+            >
+              Centuries of Royal Legacy
+            </h4>
+            <p
+              class="text-sm sm:text-base leading-relaxed text-charcoalBrown font-editorial"
+              id="storyHistoryBody1" style="white-space:pre-line"
+            >
+              Historical information for this place is loaded from the VIRAASA
+              Supabase record.
+            </p>
+            <p
+              class="text-sm sm:text-base leading-relaxed text-charcoalBrown font-editorial"
+              id="storyHistoryBody2" style="white-space:pre-line"
+            >
+              The historical story shown here is specific to the selected
+              heritage place.
+            </p>
+          </div>
+
+          <!-- Tab 3: Architecture -->
+          <div id="pane-architecture" class="story-pane hidden space-y-4">
+            <h4
+              class="text-2xl font-bold text-deepBrown font-editorial"
+              id="storyArchHead"
+            >
+              Intricate Sandstone Carvings
+            </h4>
+            <p
+              class="text-sm sm:text-base leading-relaxed text-charcoalBrown font-editorial"
+              id="storyArchBody" style="white-space:pre-line"
+            >
+              Architecture details are loaded from the selected place record.
+            </p>
+            <div class="grid sm:grid-cols-2 gap-4 pt-2">
+              <div
+<!-- Architecture hardcoded cards removed --></div>
+
+          <!-- Tab 4: Facts Accordion -->
+          <div id="pane-facts" class="story-pane hidden space-y-3">
+            <h4
+              class="text-2xl font-bold text-deepBrown font-editorial"
+              id="storyFactsHead"
+            >
+              Quick Historical Facts
+            </h4>
+            <div id="storyFactsList" class="space-y-2 text-sm text-charcoalBrown"></div>
+          </div>
+
+          <!-- Tab 5: Why it matters -->
+          <div id="pane-why" class="story-pane hidden space-y-4">
+            <h4
+              class="text-2xl font-bold text-deepBrown font-editorial"
+              id="storyWhyHead"
+            >
+              Why It Matters Today
+            </h4>
+            <p
+              class="text-sm sm:text-base leading-relaxed text-charcoalBrown font-editorial"
+              id="storyWhyBody" style="white-space:pre-line"
+            >
+              This section explains why the selected place matters today, using
+              the content saved in the VIRAASA Admin Panel.
+            </p>
+          </div>
+
+          <!-- Tab 6: Vadnagar -->
+          <div id="pane-vadnagar" class="story-pane hidden space-y-4">
+            <h4
+              class="text-2xl font-bold text-deepBrown font-editorial"
+              id="storyVadnagarHead"
+            >
+              Place Connection
+            </h4>
+            <p
+              class="text-sm sm:text-base leading-relaxed text-charcoalBrown font-editorial"
+              id="storyVadnagarBody" style="white-space:pre-line"
+            >
+              Discover the selected place's connection, context and cultural
+              relevance through the live VIRAASA record.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      class="bg-charcoalBrown text-heritageIvory border-t-2 border-antiqueGold mt-16 py-12 px-4 sm:px-6"
+    >
+      <div class="max-w-5xl mx-auto space-y-8 text-center sm:text-left">
+        <div
+          class="grid sm:grid-cols-3 gap-8 pb-8 border-b border-antiqueGold/30"
+        >
+          <div class="space-y-2">
+            <h4 class="text-xl font-bold font-editorial text-antiqueGold">
+              VIRAASA
+            </h4>
+            <p class="text-xs text-heritageIvory/70 leading-relaxed font-serif">
+              Connecting physical heritage water bottles with living digital
+              stories. Drink water. Discover India. Carry the story forward.
+            </p>
+          </div>
+          <div class="space-y-2">
+            <h5
+              class="text-xs font-bold uppercase tracking-wider text-antiqueGold"
+            >
+              BRAND PHILOSOPHY
+            </h5>
+            <ul class="text-xs text-heritageIvory/80 space-y-1 font-serif">
+              <li>• 1 BOTTLE → 1% MORE KNOWLEDGE</li>
+              <li>• EVERY BOTTLE HAS A STORY</li>
+              <li>• PRESERVING UNBROKEN HERITAGE</li>
+            </ul>
+          </div>
+          <div class="space-y-2">
+            <h5
+              class="text-xs font-bold uppercase tracking-wider text-antiqueGold"
+            >
+              HERITAGE LOCATIONS
+            </h5>
+            <p class="text-xs text-heritageIvory/70 font-serif">
+              Heritage places across India — loaded from the VIRAASA catalog.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="flex flex-col sm:flex-row items-center justify-between text-xs text-heritageIvory/60 gap-4"
+        >
+          <p>© 2026 VIRAASA Heritage Collection. All rights reserved.</p>
+          <p class="italic font-editorial text-antiqueGold">
+            "India’s Heritage, Carried Forward."
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Share Modal Dialog -->
+    <div
+      id="shareModal"
+      class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-charcoalBrown/80 backdrop-blur-sm"
+    >
+      <div
+        class="bg-heritageIvory border-2 border-antiqueGold rounded-2xl p-6 max-w-sm w-full space-y-4 relative shadow-2xl"
+      >
+        <button
+          onclick="closeShareModal()"
+          class="absolute top-3 right-3 text-warmBrown hover:text-deepBrown"
+        >
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+        <h4 class="text-lg font-bold text-deepBrown font-editorial">
+          SHARE HERITAGE STORY
+        </h4>
+        <p class="text-xs text-charcoalBrown/80">
+          Share this VIRAASA digital heritage experience with your friends and
+          family.
+        </p>
+
+        <div class="space-y-2">
+          <button
+            onclick="copyStoryLink()"
+            class="w-full py-2.5 px-4 rounded-xl bg-softCream border border-antiqueGold text-deepBrown font-bold text-xs flex items-center justify-center gap-2 hover:bg-deepBrown hover:text-heritageIvory transition"
+          >
+            <i class="fa-solid fa-link text-antiqueGold"></i>
+            <span>Copy Experience Link</span>
+          </button>
+          <button
+            onclick="shareWhatsApp()"
+            class="w-full py-2.5 px-4 rounded-xl bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-emerald-900 transition"
+          >
+            <i class="fa-brands fa-whatsapp text-base"></i>
+            <span>Share on WhatsApp</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Overlay -->
+    <div
+      id="toast"
+      class="fixed bottom-6 right-6 z-50 hidden bg-deepBrown text-heritageIvory border-2 border-antiqueGold px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-3 transition-all duration-300"
+    >
+      <i
+        class="fa-solid fa-circle-check text-antiqueGold text-base"
+        id="toastIcon"
+      ></i>
+      <span id="toastMessage">Action successful!</span>
+    </div>
+
+    <script>
+      let MONUMENTS_DATA = [];
+
+      let currentLang = "en";
+      let currentMonument = null; // Loaded from Supabase only
+
+      // Media elements used by the video/audio controls.
+      const videoEl = document.getElementById("mainVideo");
+      const audioEl = document.getElementById("mainAudio");
+
+      // Navigation state
+      let navigationHistory = [];
+      let currentView = "home";
+      let isLiked = false;
+      let isVideoPlaying = false;
+      let isAudioPlaying = false;
+      let isCaptionsOn = true;
+      let selectedCategory = "ALL";
+
+      const UI_TEXT = {
+        en: {
+          scannedBadgeSubtitle:
+            "You scanned a VIRAASA bottle. Now discover the story behind it.",
+          videoSectionTitle: "WATCH THE HERITAGE STORY",
+          audioSectionTitle: "LISTEN TO THE STORY",
+          storyMainTitle: "HERITAGE STORY & HISTORICAL ARCHIVE",
+          likeBtnText: "LIKE VIRAASA",
+          shareBtnText: "SHARE VIRAASA",
+          commentsHeading: "REVIEWS & YOUR EXPERIENCE",
+          catalogHeading: "ALL STORIES",
+          catalogSubheading:
+            "Discover every VIRAASA heritage story. Search a place, open its story, then come back to continue exploring.",
+          navHomeText: "Home",
+          navExploreText: "Explore",
+          navBackText: "Back",
+        },
+        gu: {
+          scannedBadgeSubtitle:
+            "તમે VIRAASA બોટલ સ્કેન કરી છે. હવે તેની પાછળનો ઇતિહાસ જાણો.",
+          videoSectionTitle: "વિરાસત કથા વિડીયો જુઓ",
+          audioSectionTitle: "ઓડિયો ગાઇડ સાંભળો",
+          storyMainTitle: "Historical વારસો અને કથા સંગ્રહ",
+          likeBtnText: "VIRAASA પસંદ કરો",
+          shareBtnText: "VIRAASA શેર કરો",
+          commentsHeading: "અભિપ્રાય અને તમારો અનુભવ",
+          catalogHeading: "બધી વાર્તાઓ",
+          catalogSubheading:
+            "VIRAASAની તમામ વારસાગાથાઓ શોધો. સ્થળ શોધો, વાર્તા ખોલો અને પછી પાછા આવીને આગળ શોધતા રહો.",
+          navHomeText: "હોમ",
+          navExploreText: "શોધો",
+          navBackText: "પાછા",
+        },
+        hi: {
+          scannedBadgeSubtitle:
+            "आपने VIRAASA बोतल स्कैन की है। अब इसके पीछे की कहानी जानें।",
+          videoSectionTitle: "विरासत की कहानी वीडियो देखें",
+          audioSectionTitle: "ऑडियो गाइड सुनें",
+          storyMainTitle: "ऐतिहासिक धरोहर एवं गाथा अभिलेख",
+          likeBtnText: "VIRAASA पसंद करें",
+          shareBtnText: "VIRAASA शेयर करें",
+          commentsHeading: "समीक्षा और आपका अनुभव",
+          catalogHeading: "सभी कहानियाँ",
+          catalogSubheading:
+            "VIRAASA की सभी विरासत कहानियाँ खोजें। स्थान खोजें, कहानी खोलें और फिर वापस आकर आगे खोजें।",
+          navHomeText: "होम",
+          navExploreText: "खोजें",
+          navBackText: "वापस",
+        },
+      };
+      // ==========================================
+      // VIRAASA LIVE CUSTOMER APP
+      // Supabase is the single source of heritage data.
+      // ==========================================
+      const POSITION_PREFIX = "viraasa_media_position_v3";
+      let isQrEntry = false;
+      let initialLanguageConfirmed = false;
+      let initialQrPlace = null;
+      let mediaSaveTimer = null;
+      let currentUser = null;
+      let currentProfile = null;
+      VIRAASA_AUTH_CLIENT.auth.onAuthStateChange((event, session) => {
+        if (session?.access_token)
+          localStorage.setItem("viraasa_access_token", session.access_token);
+        else if (event === "SIGNED_OUT")
+          localStorage.removeItem("viraasa_access_token");
+      });
+
+      const LANG_LABELS = {
+        en: {
+          all: "ALL",
+          watch: "WATCH",
+          listen: "LISTEN",
+          read: "READ",
+          search: "SEARCH PLACES, STORIES & HISTORY...",
+          about: "ABOUT",
+          history: "HISTORICAL STORY",
+          architecture: "ARCHITECTURE",
+          facts: "IMPORTANT FACTS",
+          why: "WHY IT MATTERS",
+          connection: "CONNECTION",
+          signIn: "SIGN IN",
+          signOut: "SIGN OUT",
+          loginRequired: "Sign in to comment or like.",
+          post: "POST COMMENT",
+          name: "Your name",
+          city: "City / Region",
+        },
+        gu: {
+          all: "બધું",
+          watch: "જુઓ",
+          listen: "સાંભળો",
+          read: "વાંચો",
+          search: "સ્થળો, વાર્તાઓ અને ઇતિહાસ શોધો...",
+          about: "વિશે",
+          history: "ઐતિહાસિક વાર્તા",
+          architecture: "સ્થાપત્ય",
+          facts: "મહત્વના તથ્યો",
+          why: "શા માટે મહત્વનું છે",
+          connection: "સંબંધ",
+          signIn: "લૉગિન",
+          signOut: "લૉગઆઉટ",
+          loginRequired: "ટિપ્પણી અથવા લાઈક માટે લૉગિન કરો.",
+          post: "ટિપ્પણી પોસ્ટ કરો",
+          name: "તમારું નામ",
+          city: "શહેર / વિસ્તાર",
+        },
+        hi: {
+          all: "सभी",
+          watch: "देखें",
+          listen: "सुनें",
+          read: "पढ़ें",
+          search: "स्थान, कहानियाँ और इतिहास खोजें...",
+          about: "परिचय",
+          history: "ऐतिहासिक कहानी",
+          architecture: "वास्तुकला",
+          facts: "महत्वपूर्ण तथ्य",
+          why: "क्यों महत्वपूर्ण है",
+          connection: "संबंध",
+          signIn: "लॉगिन",
+          signOut: "लॉगआउट",
+          loginRequired: "टिप्पणी या लाइक के लिए लॉगिन करें।",
+          post: "टिप्पणी पोस्ट करें",
+          name: "आपका नाम",
+          city: "शहर / क्षेत्र",
+        },
+      };
+
+      function supabaseHeaders(extra = {}) {
+        const token =
+          localStorage.getItem("viraasa_access_token") || VIRAASA_SUPABASE_KEY;
+        return {
+          apikey: VIRAASA_SUPABASE_KEY,
+          Authorization: `Bearer ${token}`,
+          ...extra,
+        };
+      }
+      async function sb(path, options = {}) {
+        const res = await fetch(`${VIRAASA_SUPABASE_URL}${path}`, {
+          ...options,
+          cache: "no-store",
+          headers: {
+            ...supabaseHeaders(options.headers || {}),
+            "Cache-Control": "no-cache, no-store, max-age=0",
+            Pragma: "no-cache",
+          },
+        });
+        if (!res.ok)
+          throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+        return res.status === 204 ? null : res.json();
+      }
+      function cacheBustMediaUrl(url) {
+        // Media files get a brand-new file name on every upload, so the URL is
+        // already unique. Adding a changing ?v=Date.now() made the browser think
+        // it was a new file on every refresh (audio kept restarting).
+        return url || "";
+      }
+      function textFor(obj, lang = currentLang) {
+        return obj?.[lang] || obj?.en || obj?.gu || obj?.hi || "";
+      }
+      function mediaFor(monument, type, lang = currentLang) {
+        const map = {
+          video: { en: "video_en", gu: "video_gu", hi: "video_hi" },
+          audio: { en: "audio_en", gu: "audio_gu", hi: "audio_hi" },
+          cover: { en: "audio_cover_en", gu: "audio_cover_gu", hi: "audio_cover_hi" },
+        };
+        const raw = monument?.raw || {};
+        const pick = (k) => String(raw[k] || "").trim();
+        const legacy = type === "video" ? pick("video_url") : type === "audio" ? pick("audio_url") : "";
+        return (
+          pick(map[type]?.[lang]) ||
+          pick(map[type]?.en) ||
+          pick(map[type]?.gu) ||
+          pick(map[type]?.hi) ||
+          legacy ||
+          ""
+        );
+      }
+      function mapSupabasePlace(row) {
+        const fallbackLang = (v, fallback = "") => ({
+          en: row[v + "_en"] || fallback,
+          gu: row[v + "_gu"] || row[v + "_en"] || fallback,
+          hi: row[v + "_hi"] || row[v + "_en"] || fallback,
+        });
+        return {
+          id: row.slug || row.id,
+          uuid: row.id,
+          slug: row.slug,
+          category: row.category || "Heritage",
+          location: row.location || "",
+          era: row.era || "",
+          title: {
+            en: row.title_en || "",
+            gu: row.title_gu || row.title_en || "",
+            hi: row.title_hi || row.title_en || "",
+          },
+          tagline: fallbackLang("about"),
+          image: cacheBustMediaUrl(row.image_url || ""),
+          raw: row,
+          storyAboutHead: { en: "About", gu: "વિશે", hi: "परिचय" },
+          storyAboutBody1: fallbackLang("about"),
+          storyAboutBody2: { en: "", gu: "", hi: "" },
+          storyHistoryHead: {
+            en: "Historical Story",
+            gu: "ઐતિહાસિક વાર્તા",
+            hi: "ऐतिहासिक कहानी",
+          },
+          storyHistoryBody1: fallbackLang("history"),
+          storyHistoryBody2: { en: "", gu: "", hi: "" },
+          storyArchHead: {
+            en: "Architecture",
+            gu: "સ્થાપત્ય",
+            hi: "वास्तुकला",
+          },
+          storyArchBody: fallbackLang("architecture"),
+          facts: fallbackLang("important_facts"),
+          whyItMatters: fallbackLang("why_it_matters"),
+          connectionTitle: {
+            en: row.connection_title_en || "",
+            gu: row.connection_title_gu || row.connection_title_en || "",
+            hi: row.connection_title_hi || row.connection_title_en || "",
+          },
+          connectionText: {
+            en: row.connection_text_en || row.vadnagar_heritage_en || "",
+            gu:
+              row.connection_text_gu ||
+              row.vadnagar_heritage_gu ||
+              row.connection_text_en ||
+              row.vadnagar_heritage_en ||
+              "",
+            hi:
+              row.connection_text_hi ||
+              row.vadnagar_heritage_hi ||
+              row.connection_text_en ||
+              row.vadnagar_heritage_en ||
+              "",
+          },
+        };
+      }
+
+      function updateStaticLanguageUI(lang) {
+        const t = LANG_LABELS[lang] || LANG_LABELS.en;
+        const set = (id, v) => {
+          const e = document.getElementById(id);
+          if (e) e.innerText = v;
+        };
+        set("tab-history", t.history);
+        set("tab-architecture", t.architecture);
+        set("tab-facts", t.facts);
+        set("tab-why", t.why);
+        set("tab-vadnagar", t.connection);
+        set(
+          "likeBtnText",
+          UI_TEXT[lang]?.likeBtnText ||
+            (lang === "gu"
+              ? "VIRAASA પસંદ કરો"
+              : lang === "hi"
+                ? "VIRAASA पसंद करें"
+                : "LIKE VIRAASA"),
+        );
+        set(
+          "commentsHeading",
+          UI_TEXT[lang]?.commentsHeading || "REVIEWS & YOUR EXPERIENCE",
+        );
+        set(
+          "videoSectionTitle",
+          UI_TEXT[lang]?.videoSectionTitle || "WATCH THE HERITAGE STORY",
+        );
+        set(
+          "audioSectionTitle",
+          UI_TEXT[lang]?.audioSectionTitle || "LISTEN TO THE STORY",
+        );
+        set(
+          "storyMainTitle",
+          UI_TEXT[lang]?.storyMainTitle ||
+            "HERITAGE STORY & HISTORICAL ARCHIVE",
+        );
+        set("catalogHeading", UI_TEXT[lang]?.catalogHeading || "ALL STORIES");
+        set("catalogSubheading", UI_TEXT[lang]?.catalogSubheading || "");
+        set("navHomeText", UI_TEXT[lang]?.navHomeText || "Home");
+        set("navExploreText", UI_TEXT[lang]?.navExploreText || "Explore");
+        set("navBackText", UI_TEXT[lang]?.navBackText || "Back");
+        const search = document.getElementById("searchInput");
+        if (search) search.placeholder = t.search;
+        const author = document.getElementById("commentAuthor");
+        if (author) author.placeholder = t.name;
+        const city = document.getElementById("commentLocation");
+        if (city) city.placeholder = t.city;
+        const post = document.querySelector('button[type="submit"]');
+        if (post && post.closest("form")?.onsubmit) post.innerText = t.post;
+      }
+
+      function ensureCategoryFilters() {
+        const pills = [...document.querySelectorAll(".cat-pill")];
+        if (!pills.length) return;
+        const cats = [
+          ...new Set(MONUMENTS_DATA.map((x) => x.category).filter(Boolean)),
+        ];
+        const container = pills[0].parentElement;
+        container.innerHTML = "";
+        const vals = ["ALL", ...cats];
+        const t = LANG_LABELS[currentLang] || LANG_LABELS.en;
+        vals.forEach((cat, i) => {
+          const b = document.createElement("button");
+          b.className = `cat-pill px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap ${i === 0 ? "bg-deepBrown text-heritageIvory" : "bg-softCream text-deepBrown"} border border-antiqueGold/40`;
+          b.textContent = cat === "ALL" ? t.all : cat;
+          b.onclick = () => setCategoryFilter(cat);
+          container.appendChild(b);
+        });
+      }
+
+      function setDetailVisibility(show) {
+        ["hero", "videoSection", "audioSection", "storySection"].forEach((id) =>
+          document.getElementById(id)?.classList.toggle("hidden", !show),
+        );
+      }
+      function updateBackButton() {
+        const b = document.getElementById("navBackButton");
+        if (!b) return;
+        b.classList.toggle("hidden", navigationHistory.length === 0);
+      }
+      function showHome() {
+        navigationHistory = [];
+        currentView = "home";
+        document.getElementById("homeSection")?.classList.remove("hidden");
+        setDetailVisibility(false);
+        updateBackButton();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function showExplore() {
+        currentView = "explore";
+        document.getElementById("homeSection")?.classList.remove("hidden");
+        setDetailVisibility(false);
+        renderCatalogGrid();
+        document
+          .getElementById("catalogSection")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        updateBackButton();
+      }
+      function showMonumentDetail(id, addToHistory = true) {
+        const found = MONUMENTS_DATA.find(
+          (m) => m.id === id || m.slug === id || m.uuid === id,
+        );
+
+        if (!found) return;
+
+        // Keep Explore available after entering a story from QR
+        if (addToHistory) {
+          if (currentView && String(currentView).startsWith("monument:")) {
+            navigationHistory.push(currentView);
+          } else {
+            navigationHistory.push("explore");
+          }
+        }
+
+        currentMonument = found;
+        currentView = `monument:${found.id}`;
+
+        renderMonument(found);
+
+        document.getElementById("homeSection")?.classList.add("hidden");
+        setDetailVisibility(true);
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+
+        updateBackButton();
+        loadComments();
+        updateLikeState();
+      }
+      function goBackOneStep() {
+        const prev = navigationHistory.pop();
+        if (!prev) {
+          showHome();
+          return;
+        }
+        if (prev === "explore" || prev === "home") {
+          showExplore();
+          return;
+        }
+        const id = String(prev).replace(/^monument:/, "");
+        showMonumentDetail(id, false);
+      }
+
+      function selectInitialLang(lang) {
+        currentLang = lang;
+        document.querySelectorAll(".lang-btn").forEach((b) => {
+          b.classList.remove("bg-deepBrown", "text-heritageIvory");
+          b.classList.add("bg-softCream", "text-deepBrown");
+        });
+        document
+          .getElementById(`btn-lang-${lang}`)
+          ?.classList.add("bg-deepBrown", "text-heritageIvory");
+        document.getElementById("globalLangSelector").value = lang;
+      }
+      function confirmInitialLanguage() {
+        initialLanguageConfirmed = true;
+        localStorage.setItem("viraasa_language", currentLang);
+        document.getElementById("qrScanOverlay")?.classList.add("hidden");
+        applyLanguage(currentLang);
+        if (initialQrPlace) {
+          showMonumentDetail(initialQrPlace, false);
+          initialQrPlace = null;
+        } else showHome();
+      }
+      function changeLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem("viraasa_language", lang);
+        applyLanguage(lang);
+      }
+      function applyLanguage(lang) {
+        currentLang = lang;
+        document.getElementById("globalLangSelector").value = lang;
+        document.getElementById("videoLangSelector").value = lang;
+        document.getElementById("audioLangSelector").value = lang;
+        document.body.classList.toggle("lang-gu", lang === "gu");
+        document.body.classList.toggle("lang-hi", lang === "hi");
+        const t = UI_TEXT[lang] || UI_TEXT.en;
+        Object.entries(t).forEach(([k, v]) => {
+          const e = document.getElementById(k);
+          if (e) e.innerText = v;
+        });
+        updateStaticLanguageUI(lang);
+        if (currentMonument) renderMonument(currentMonument);
+        renderCatalogGrid();
+        if (currentMonument) loadComments();
+        if (currentMonument) updateLikeState();
+      }
+
+      function renderMonument(m) {
+        if (!m) return;
+        currentMonument = m;
+        const get = (id) => document.getElementById(id);
+        get("heroImage").src = m.image || "";
+        get("heroTitle").innerText = textFor(m.title);
+        get("heroTagline").innerText = shortText(textFor(m.tagline), 220);
+        get("heroLocationBadge").innerHTML =
+          `<i class="fa-solid fa-location-dot mr-1"></i> ${escapeHtml(m.location)}`;
+        get("heroEraBadge").innerText = m.era || m.category || "";
+
+        // ---- VIDEO / AUDIO: only touch the player when the FILE really changed ----
+        const videoUrl = mediaFor(m, "video", currentLang);
+        const audioUrl = mediaFor(m, "audio", currentLang);
+        videoEl.poster = m.image || "";
+        setMediaSource(videoEl, videoUrl);
+        setMediaSource(audioEl, audioUrl);
+        const hasVideo = !!videoUrl;
+        get("videoEmptyNote")?.classList.toggle("hidden", hasVideo);
+        get("videoEmptyNote")?.classList.toggle("flex", !hasVideo);
+        get("centralVideoPlayBtn")?.classList.toggle("hidden", !hasVideo);
+        const vt = LANG_EMPTY[currentLang] || LANG_EMPTY.en;
+        if (get("videoEmptyText")) get("videoEmptyText").innerText = vt.video;
+        get("subtitleText").innerText = textFor(m.title);
+        get("audioTrackCover").src = mediaFor(m, "cover", currentLang) || m.image || "";
+        get("audioTrackTitle").innerText = textFor(m.title);
+        if (get("audioTrackAuthor") && !audioUrl) get("audioTrackAuthor").innerText = vt.audio;
+        get("storyAboutHead").innerText = textFor(m.storyAboutHead);
+        get("storyAboutBody1").innerText = textFor(m.storyAboutBody1);
+        get("storyAboutBody2").innerText = textFor(m.storyAboutBody2);
+        get("storyHistoryHead").innerText = textFor(m.storyHistoryHead);
+        get("storyHistoryBody1").innerText = textFor(m.storyHistoryBody1);
+        get("storyHistoryBody2").innerText = textFor(m.storyHistoryBody2);
+        get("storyArchHead").innerText = textFor(m.storyArchHead);
+        get("storyArchBody").innerText = textFor(m.storyArchBody);
+        // IMPORTANT FACTS / WHY IT MATTERS / CONNECTION
+        // Read the live Supabase row first, then fall back to the mapped story object.
+        const raw = m.raw || {};
+        const readLang = (base, mapped) => {
+          const pick = (k) => String(raw[k] ?? "").trim();
+          // Empty strings ("") are common - admin saves blank languages as "".
+          // Use || so a blank Gujarati/Hindi field falls back to English.
+          return (
+            pick(`${base}_${currentLang}`) ||
+            pick(`${base}_en`) ||
+            pick(`${base}_gu`) ||
+            pick(`${base}_hi`) ||
+            String(textFor(mapped) || "").trim()
+          );
+        };
+
+        get("storyFactsHead").innerText = LANG_LABELS[currentLang].facts;
+        const factsText = readLang("important_facts", m.facts);
+        renderFacts(factsText);
+
+        get("storyWhyHead").innerText = LANG_LABELS[currentLang].why;
+        const whyText = readLang("why_it_matters", m.whyItMatters);
+        get("storyWhyBody").innerText = whyText;
+        get("storyWhyBody").classList.toggle("hidden", !whyText);
+
+        const connectionTitle =
+          readLang("connection_title", m.connectionTitle) || LANG_LABELS[currentLang].connection;
+        const connectionText = readLang("connection_text", m.connectionText);
+        get("storyVadnagarHead").innerText = connectionTitle;
+        get("storyVadnagarBody").innerText = connectionText;
+        get("storyVadnagarBody").classList.toggle("hidden", !connectionText);
+      }
+
+      const LANG_EMPTY = {
+        en: { video: "Video for this place is coming soon.", audio: "Audio guide coming soon" },
+        gu: { video: "આ સ્થળનો વિડીયો ટૂંક સમયમાં આવશે.", audio: "ઓડિયો ગાઇડ ટૂંક સમયમાં" },
+        hi: { video: "इस स्थान का वीडियो जल्द आ रहा है।", audio: "ऑडियो गाइड जल्द आ रहा है" },
+      };
+      function shortText(t, max) {
+        t = String(t || "").replace(/\s+/g, " ").trim();
+        if (t.length <= max) return t;
+        const cut = t.slice(0, max);
+        const stop = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("। "), cut.lastIndexOf("! "));
+        return (stop > max * 0.5 ? cut.slice(0, stop + 1) : cut.replace(/\s+\S*$/, "") + "…");
+      }
+      function parseFacts(text) {
+        const t = String(text || "").replace(/\\n/g, "\n");
+        let parts = t.split(/\r?\n+/);
+        if (parts.length === 1 && /•/.test(t)) parts = t.split("•");
+        if (parts.length === 1 && /(?:^|\s)\d+[.)]\s/.test(t)) parts = t.split(/(?:^|\s)(?=\d+[.)]\s)/);
+        return parts
+          .map((x) => x.replace(/^\s*(?:[-*•●▪‣]|\d+[.)])\s*/, "").trim())
+          .filter(Boolean);
+      }
+      function renderFacts(text) {
+        const box = document.getElementById("storyFactsList");
+        if (!box) return;
+        const items = parseFacts(text);
+        box.innerHTML = items
+          .map(
+            (f) =>
+              `<div class="p-3.5 bg-heritageIvory rounded-xl border border-antiqueGold/30 flex items-start gap-3"><i class="fa-solid fa-check text-antiqueGold mt-1"></i><span>${escapeHtml(f)}</span></div>`,
+          )
+          .join("");
+        box.classList.toggle("hidden", !items.length);
+      }
+
+      // ---- Playback position is remembered PER FILE (by URL) ----
+      function posKeyFor(url) {
+        return `${POSITION_PREFIX}:${url}`;
+      }
+      function saveMediaPositions() {
+        try {
+          [videoEl, audioEl].forEach((el) => {
+            const k = el?.dataset?.srcKey;
+            if (!k) return;
+            if (el.ended || !isFinite(el.currentTime) || el.currentTime < 2)
+              localStorage.removeItem(posKeyFor(k));
+            else localStorage.setItem(posKeyFor(k), String(el.currentTime));
+          });
+        } catch {}
+      }
+      function restoreMediaPosition(el) {
+        try {
+          const k = el?.dataset?.srcKey;
+          if (!k || !isFinite(el.duration)) return;
+          const t = parseFloat(localStorage.getItem(posKeyFor(k)) || "0");
+          if (t > 2 && t < el.duration - 3) el.currentTime = t;
+        } catch {}
+      }
+      function resetMediaUI(el) {
+        const p = el === videoEl ? "video" : "audio";
+        const s = document.getElementById(`${p}Seeker`);
+        if (s) s.value = 0;
+        const c = document.getElementById(`${p}CurrentTime`);
+        if (c) c.innerText = "00:00";
+        const d = document.getElementById(`${p}Duration`);
+        if (d) d.innerText = "00:00";
+      }
+      // Load a new file ONLY when the URL differs. Same URL = do nothing, so a
+      // background refresh can never interrupt or restart what the visitor hears.
+      function setMediaSource(el, url) {
+        const key = url || "";
+        if ((el.dataset.srcKey || "") === key) return;
+        const wasPlaying = !el.paused && !el.ended;
+        saveMediaPositions();
+        el.pause();
+        el.dataset.srcKey = key;
+        el.dataset.errShown = "";
+        resetMediaUI(el);
+        if (!key) {
+          el.removeAttribute("src");
+          el.load();
+          return;
+        }
+        el.src = key;
+        el.load();
+        if (wasPlaying) el.play().catch(() => {});
+      }
+      function bindMediaExtras() {
+        [videoEl, audioEl].forEach((el) => {
+          const p = el === videoEl ? "video" : "audio";
+          const showDur = () => {
+            const d = document.getElementById(`${p}Duration`);
+            if (d && isFinite(el.duration)) d.innerText = formatTime(el.duration);
+          };
+          el.addEventListener("loadedmetadata", () => {
+            showDur();
+            restoreMediaPosition(el);
+          });
+          el.addEventListener("durationchange", showDur);
+          el.addEventListener("ended", () => {
+            el.currentTime = 0;
+            resetMediaUI(el);
+            showDur();
+          });
+          el.addEventListener("error", () => {
+            if (!el.dataset.srcKey || el.dataset.errShown) return;
+            el.dataset.errShown = "1";
+            showToast(
+              p === "video"
+                ? "This video could not be loaded. Please check your internet and try again."
+                : "This audio could not be loaded. Please check your internet and try again.",
+              "error",
+            );
+          });
+        });
+        window.addEventListener("pagehide", saveMediaPositions);
+        setInterval(() => {
+          if (!audioEl.paused || !videoEl.paused) saveMediaPositions();
+        }, 5000);
+      }
+
+      function toggleVideoPlay() {
+        if (!videoEl.src)
+          return showToast(
+            "Video is not available for this language.",
+            "error",
+          );
+        if (videoEl.paused) videoEl.play().catch(() => {});
+        else videoEl.pause();
+      }
+      function updateVideoPlayIcons(playing) {
+        const c = document.getElementById("centralPlayIcon"),
+          b = document.getElementById("videoPlayIcon"),
+          btn = document.getElementById("centralVideoPlayBtn");
+        if (c)
+          c.className = playing
+            ? "fa-solid fa-pause text-xl sm:text-2xl"
+            : "fa-solid fa-play text-xl sm:text-2xl ml-1";
+        if (b)
+          b.className = playing
+            ? "fa-solid fa-pause text-base"
+            : "fa-solid fa-play text-base ml-0.5";
+        btn?.classList.toggle("opacity-0", playing);
+        btn?.classList.toggle("pointer-events-none", playing);
+      }
+      function setupVideoEvents() {
+        if (videoEl.dataset.bound) return;
+        videoEl.dataset.bound = "1";
+        const seeker = document.getElementById("videoSeeker");
+        videoEl.addEventListener("timeupdate", () => {
+          if (videoEl.duration) {
+            seeker.value = (videoEl.currentTime / videoEl.duration) * 100;
+            document.getElementById("videoCurrentTime").innerText = formatTime(
+              videoEl.currentTime,
+            );
+            document.getElementById("videoDuration").innerText = formatTime(
+              videoEl.duration,
+            );
+          }
+        });
+        seeker?.addEventListener("input", () => {
+          if (videoEl.duration)
+            videoEl.currentTime =
+              (Number(seeker.value) / 100) * videoEl.duration;
+        });
+        videoEl.addEventListener("play", () => {
+          updateVideoPlayIcons(true);
+          if (!audioEl.paused) audioEl.pause();
+        });
+        videoEl.addEventListener("pause", () => {
+          updateVideoPlayIcons(false);
+          saveMediaPositions();
+        });
+        videoEl.addEventListener("ended", () => {
+          updateVideoPlayIcons(false);
+          saveMediaPositions();
+        });
+      }
+      function changeVideoVolume(v) {
+        videoEl.volume = Number(v);
+      }
+      function toggleVideoMute() {
+        videoEl.muted = !videoEl.muted;
+        document.getElementById("videoVolumeIcon").className = videoEl.muted
+          ? "fa-solid fa-volume-xmark text-xs"
+          : "fa-solid fa-volume-high text-xs";
+      }
+      function toggleCaptions() {
+        isCaptionsOn = !isCaptionsOn;
+        document
+          .getElementById("subtitleOverlay")
+          ?.classList.toggle("opacity-0", !isCaptionsOn);
+      }
+      function toggleVideoFullscreen() {
+        const v = document.getElementById("mainVideo");
+        if (v.requestFullscreen) v.requestFullscreen();
+        else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+      }
+      function changeVideoLanguage(lang) {
+        saveMediaPositions();
+        currentLang = lang;
+        applyLanguage(lang);
+      }
+
+      function toggleAudioPlay() {
+        if (!audioEl.src)
+          return showToast(
+            "Audio is not available for this language.",
+            "error",
+          );
+        if (audioEl.paused) audioEl.play().catch(() => {});
+        else audioEl.pause();
+      }
+      function seekAudio(sec) {
+        if (!audioEl.src) return;
+        audioEl.currentTime = Math.max(
+          0,
+          Math.min(audioEl.duration || Infinity, audioEl.currentTime + sec),
+        );
+        saveMediaPositions();
+      }
+      function changeAudioLanguage(lang) {
+        saveMediaPositions();
+        currentLang = lang;
+        applyLanguage(lang);
+      }
+      function setupAudioEvents() {
+        if (audioEl.dataset.bound) return;
+        audioEl.dataset.bound = "1";
+        const seeker = document.getElementById("audioSeeker");
+        audioEl.addEventListener("timeupdate", () => {
+          if (audioEl.duration) {
+            seeker.value = (audioEl.currentTime / audioEl.duration) * 100;
+            document.getElementById("audioCurrentTime").innerText = formatTime(
+              audioEl.currentTime,
+            );
+            document.getElementById("audioDuration").innerText = formatTime(
+              audioEl.duration,
+            );
+          }
+        });
+        seeker?.addEventListener("input", () => {
+          if (audioEl.duration)
+            audioEl.currentTime =
+              (Number(seeker.value) / 100) * audioEl.duration;
+        });
+        audioEl.addEventListener("play", () => {
+          if (!videoEl.paused) videoEl.pause();
+          isAudioPlaying = true;
+          document.getElementById("audioPlayIcon").className =
+            "fa-solid fa-pause text-base";
+        });
+        audioEl.addEventListener("pause", () => {
+          isAudioPlaying = false;
+          document.getElementById("audioPlayIcon").className =
+            "fa-solid fa-play text-base ml-0.5";
+          saveMediaPositions();
+        });
+        audioEl.addEventListener("ended", () => saveMediaPositions());
+      }
+
+      function switchStoryTab(tab) {
+        document
+          .querySelectorAll(".story-tab")
+          .forEach((t) =>
+            t.classList.remove("bg-deepBrown", "text-heritageIvory"),
+          );
+        document
+          .getElementById(`tab-${tab}`)
+          ?.classList.add("bg-deepBrown", "text-heritageIvory");
+        document
+          .querySelectorAll(".story-pane")
+          .forEach((p) => p.classList.add("hidden"));
+        document.getElementById(`pane-${tab}`)?.classList.remove("hidden");
+      }
+      async function updateLikeState() {
+        if (!currentMonument) return;
+        const icon = document.getElementById("likeIcon");
+        const count = document.getElementById("likeCount");
+        try {
+          const user = await getUser();
+          currentUser = user;
+          const total = await sb(
+            `/rest/v1/place_likes?select=id,user_id,created_at&place_id=eq.${encodeURIComponent(currentMonument.uuid)}&order=created_at.asc&limit=1000`,
+          );
+          count.innerText = String(total?.length || 0);
+          const likeNames = document.getElementById("likeNames");
+          if (likeNames) {
+            if (!total?.length) {
+              likeNames.innerText = "No likes yet.";
+            } else {
+              const ids = [
+                ...new Set(total.map((x) => x.user_id).filter(Boolean)),
+              ].slice(0, 5);
+              let names = [];
+              if (ids.length) {
+                const rows = await sb(
+                  `/rest/v1/profiles?select=id,display_name&id=in.(${ids.map(encodeURIComponent).join(",")})`,
+                );
+                names = (rows || []).map((x) => x.display_name).filter(Boolean);
+              }
+              likeNames.innerText = names.length
+                ? `Liked by ${names.slice(0, 3).join(", ")}${total.length > 3 ? " and others" : ""}.`
+                : `${total.length} verified visitor${total.length === 1 ? "" : "s"} liked this story.`;
+            }
+          }
+          if (!user) {
+            isLiked = false;
+            icon.className = "fa-regular fa-heart text-lg text-antiqueGold";
+            return;
+          }
+          const mine = await sb(
+            `/rest/v1/place_likes?select=id&place_id=eq.${encodeURIComponent(currentMonument.uuid)}&user_id=eq.${encodeURIComponent(user.id)}&limit=1`,
+          );
+          isLiked = !!mine?.length;
+          icon.className = isLiked
+            ? "fa-solid fa-heart text-lg text-red-600"
+            : "fa-regular fa-heart text-lg text-antiqueGold";
+        } catch (e) {
+          console.error(e);
+          count.innerText = "0";
+          const likeNames = document.getElementById("likeNames");
+          if (likeNames) likeNames.innerText = "";
+        }
+      }
+      async function toggleStoryLike() {
+        if (!currentMonument) return;
+        const user = await requireAuth();
+        if (!user) return;
+        try {
+          if (isLiked) {
+            await sb(
+              `/rest/v1/place_likes?place_id=eq.${encodeURIComponent(currentMonument.uuid)}&user_id=eq.${encodeURIComponent(user.id)}`,
+              { method: "DELETE" },
+            );
+            isLiked = false;
+          } else {
+            await sb("/rest/v1/place_likes", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Prefer: "return=minimal",
+              },
+              body: JSON.stringify({
+                place_id: currentMonument.uuid,
+                user_id: user.id,
+              }),
+            });
+            isLiked = true;
+          }
+          await updateLikeState();
+        } catch (e) {
+          showToast("Like could not be saved.", "error");
+        }
+      }
+
+      async function getUser() {
+        try {
+          const { data } = await VIRAASA_AUTH_CLIENT.auth.getUser();
+          return data?.user || null;
+        } catch {
+          return null;
+        }
+      }
+      async function ensureAuthPanel() {
+        if (document.getElementById("viraasaAuthPanel")) return;
+        const form = document
+          .querySelector("#commentsList")
+          ?.parentElement?.querySelector("form");
+        if (!form) return;
+        const box = document.createElement("div");
+        box.id = "viraasaAuthPanel";
+        box.className =
+          "mb-4 p-4 rounded-2xl bg-softCream border border-antiqueGold/40 text-xs";
+        box.innerHTML = `<div class="font-bold text-deepBrown mb-2" id="authStatusText">Sign in to post comments and like stories.</div><div class="grid sm:grid-cols-3 gap-2"><input id="authEmail" type="email" placeholder="Email" class="bg-heritageIvory border border-antiqueGold/50 rounded-lg px-3 py-2"><input id="authPassword" type="password" placeholder="Password" class="bg-heritageIvory border border-antiqueGold/50 rounded-lg px-3 py-2"><input id="authName" type="text" placeholder="Display name" class="bg-heritageIvory border border-antiqueGold/50 rounded-lg px-3 py-2"></div><div class="flex gap-2 mt-2"><button type="button" onclick="viraasaLogin()" class="px-3 py-2 rounded-lg bg-deepBrown text-heritageIvory">SIGN IN</button><button type="button" onclick="viraasaSignup()" class="px-3 py-2 rounded-lg border border-antiqueGold">CREATE ACCOUNT</button><button type="button" onclick="viraasaLogout()" class="px-3 py-2 rounded-lg border border-antiqueGold">LOG OUT</button></div>`;
+        form.parentElement.insertBefore(box, form);
+      }
+      async function refreshAuthUI() {
+        await ensureAuthPanel();
+        const u = await getUser();
+        currentUser = u;
+        if (u) await refreshAuthProfile(u);
+        const status = document.getElementById("authStatusText");
+        if (status)
+          status.innerText = u
+            ? `Signed in as ${u.email}`
+            : LANG_LABELS[currentLang].loginRequired;
+        const name = document.getElementById("commentAuthor");
+        if (name) {
+          name.value =
+            currentProfile?.display_name ||
+            u?.user_metadata?.display_name ||
+            "";
+          name.readOnly = !!u;
+        }
+      }
+      async function viraasaLogin() {
+        const email = document.getElementById("authEmail").value.trim(),
+          password = document.getElementById("authPassword").value;
+        if (!email || !password)
+          return showToast("Enter email and password.", "error");
+        const { data, error } =
+          await VIRAASA_AUTH_CLIENT.auth.signInWithPassword({
+            email,
+            password,
+          });
+        if (error) return showToast(error.message, "error");
+        if (data.session) {
+          localStorage.setItem(
+            "viraasa_access_token",
+            data.session.access_token,
+          );
+        }
+        await refreshAuthProfile(data.user);
+        await refreshAuthUI();
+        await updateLikeState();
+        await loadComments();
+        showToast("Signed in.", "success");
+      }
+      async function viraasaSignup() {
+        const email = document.getElementById("authEmail").value.trim(),
+          password = document.getElementById("authPassword").value,
+          name = document.getElementById("authName").value.trim();
+        if (!email || password.length < 6)
+          return showToast(
+            "Enter an email and a password with at least 6 characters.",
+            "error",
+          );
+        const { data, error } = await VIRAASA_AUTH_CLIENT.auth.signUp({
+          email,
+          password,
+          options: { data: { display_name: name } },
+        });
+        if (error) return showToast(error.message, "error");
+        if (data.session) {
+          localStorage.setItem(
+            "viraasa_access_token",
+            data.session.access_token,
+          );
+          await refreshAuthProfile(data.user);
+          await refreshAuthUI();
+        }
+        showToast(
+          data.session
+            ? "Account created and signed in."
+            : "Account created. Check your email if confirmation is required.",
+          "success",
+        );
+      }
+      async function viraasaLogout() {
+        await VIRAASA_AUTH_CLIENT.auth.signOut();
+        localStorage.removeItem("viraasa_access_token");
+        currentUser = null;
+        currentProfile = null;
+        await refreshAuthUI();
+        await updateLikeState();
+      }
+      async function refreshAuthProfile(user) {
+        if (!user) return;
+        currentProfile = {
+          display_name: user.user_metadata?.display_name || "",
+        };
+        try {
+          const rows = await sb(
+            `/rest/v1/profiles?id=eq.${encodeURIComponent(user.id)}`,
+          );
+          if (rows?.[0]) currentProfile = rows[0];
+          else
+            await sb("/rest/v1/profiles", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Prefer: "return=minimal",
+              },
+              body: JSON.stringify({
+                id: user.id,
+                display_name: currentProfile.display_name,
+              }),
+            });
+        } catch {}
+      }
+
+      async function postComment(e) {
+        e.preventDefault();
+        const user = await requireAuth();
+        if (!user || !currentMonument) return;
+        const text = document.getElementById("commentText").value.trim();
+        if (!text) return;
+        try {
+          await refreshAuthProfile(user);
+          await sb("/rest/v1/comments", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Prefer: "return=minimal",
+            },
+            body: JSON.stringify({
+              place_id: currentMonument.uuid,
+              user_id: user.id,
+              comment: text,
+            }),
+          });
+          document.getElementById("commentText").value = "";
+          await loadComments();
+          showToast("Comment posted.", "success");
+        } catch (err) {
+          showToast("Comment could not be posted. " + err.message, "error");
+        }
+      }
+      async function requireAuth() {
+        const u = await getUser();
+        if (u) {
+          currentUser = u;
+          await refreshAuthProfile(u);
+          return u;
+        }
+        await ensureAuthPanel();
+        showToast(LANG_LABELS[currentLang].loginRequired, "error");
+        document
+          .getElementById("viraasaAuthPanel")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return null;
+      }
+      async function loadComments() {
+        if (!currentMonument) return;
+        const list = document.getElementById("commentsList");
+        if (!list) return;
+        list.innerHTML =
+          '<div class="text-xs text-warmBrown">Loading comments...</div>';
+        try {
+          const rows = await sb(
+            `/rest/v1/comments?place_id=eq.${encodeURIComponent(currentMonument.uuid)}&select=id,user_id,comment,rating,created_at,profiles(display_name)&order=created_at.desc&limit=100`,
+          );
+          if (!rows?.length) {
+            list.innerHTML =
+              '<div class="text-xs text-warmBrown">No comments yet. Be the first to share your experience.</div>';
+            return;
+          }
+          list.innerHTML = rows
+            .map(
+              (c) =>
+                `<div class="bg-heritageIvory p-3.5 rounded-xl border border-antiqueGold/30 text-xs space-y-1"><div class="flex items-center justify-between"><span class="font-bold text-deepBrown">${escapeHtml(c.profiles?.display_name || "VIRAASA Visitor")}</span><span class="text-[10px] text-warmBrown font-mono">${new Date(c.created_at).toLocaleString()}</span></div><p class="text-charcoalBrown/90 font-serif">${escapeHtml(c.comment)}</p>${currentUser?.id === c.user_id ? `<button onclick="deleteComment('${c.id}')" class="text-[10px] text-red-700 font-bold">DELETE</button>` : ""}</div>`,
+            )
+            .join("");
+        } catch (e) {
+          console.error(e);
+          list.innerHTML =
+            '<div class="text-xs text-red-700">Comments could not be loaded.</div>';
+        }
+      }
+      async function deleteComment(id) {
+        const u = await requireAuth();
+        if (!u) return;
+        try {
+          await sb(`/rest/v1/comments?id=eq.${encodeURIComponent(id)}`, {
+            method: "DELETE",
+          });
+          await loadComments();
+          showToast("Comment deleted.", "success");
+        } catch (e) {
+          showToast("Delete failed: " + e.message, "error");
+        }
+      }
+
+      function openShareModal() {
+        document.getElementById("shareModal")?.classList.remove("hidden");
+      }
+      function closeShareModal() {
+        document.getElementById("shareModal")?.classList.add("hidden");
+      }
+      function copyStoryLink() {
+        navigator.clipboard?.writeText(window.location.href);
+        closeShareModal();
+        showToast("Experience URL copied.", "success");
+      }
+      function shareWhatsApp() {
+        const url = encodeURIComponent(window.location.href),
+          text = encodeURIComponent(
+            `Discover ${currentMonument?.title?.en || "VIRAASA Heritage"} on VIRAASA: `,
+          );
+        window.open(
+          `https://api.whatsapp.com/send?text=${text}${url}`,
+          "_blank",
+          "noopener",
+        );
+        closeShareModal();
+      }
+
+      function renderCatalogGrid() {
+        const grid = document.getElementById("monumentGrid");
+        if (!grid) return;
+        const q = (
+          document.getElementById("searchInput")?.value || ""
+        ).toLowerCase();
+        const filtered = MONUMENTS_DATA.filter(
+          (m) =>
+            (selectedCategory === "ALL" || m.category === selectedCategory) &&
+            ((m.title.en || "").toLowerCase().includes(q) ||
+              (m.title.gu || "").toLowerCase().includes(q) ||
+              (m.title.hi || "").toLowerCase().includes(q) ||
+              (m.location || "").toLowerCase().includes(q)),
+        );
+        grid.innerHTML =
+          filtered
+            .map(
+              (item) =>
+                `<div class="heritage-card rounded-2xl overflow-hidden flex flex-col justify-between group cursor-pointer" onclick="loadAndScrollToMonument('${escapeHtml(item.id)}','story')"><div><div class="relative h-48 w-full overflow-hidden bg-charcoalBrown"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title.en)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-t from-charcoalBrown via-transparent to-transparent"></div><span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-deepBrown/90 text-antiqueGold border border-antiqueGold/40 text-[10px] font-bold uppercase tracking-wider">${escapeHtml(item.category)}</span></div><div class="p-5 space-y-2"><span class="text-xs text-warmBrown font-semibold block"><i class="fa-solid fa-location-dot mr-1"></i>${escapeHtml(item.location)}</span><h4 class="text-xl font-bold text-deepBrown font-editorial">${escapeHtml(textFor(item.title))}</h4><p class="text-xs text-charcoalBrown/80 line-clamp-2 leading-relaxed font-serif">${escapeHtml(textFor(item.tagline))}</p></div></div><div class="p-5 pt-0 grid grid-cols-3 gap-2"><button onclick="event.stopPropagation(); loadAndScrollToMonument('${escapeHtml(item.id)}','video')" class="py-2 rounded-xl bg-deepBrown text-heritageIvory text-[11px] font-bold">${LANG_LABELS[currentLang].watch}</button><button onclick="event.stopPropagation(); loadAndScrollToMonument('${escapeHtml(item.id)}','audio')" class="py-2 rounded-xl bg-softCream text-deepBrown text-[11px] font-bold border border-antiqueGold/50">${LANG_LABELS[currentLang].listen}</button><button onclick="event.stopPropagation(); loadAndScrollToMonument('${escapeHtml(item.id)}','story')" class="py-2 rounded-xl bg-softCream text-deepBrown text-[11px] font-bold border border-antiqueGold/50">${LANG_LABELS[currentLang].read}</button></div></div>`,
+            )
+            .join("") ||
+          '<div class="text-center py-10 text-warmBrown">No heritage places found.</div>';
+        ensureCategoryFilters();
+      }
+      function setCategoryFilter(category) {
+        selectedCategory = category;
+        document.querySelectorAll(".cat-pill").forEach((b) => {
+          const active =
+            b.textContent === category ||
+            (category === "ALL" &&
+              b.textContent === LANG_LABELS[currentLang].all);
+          b.classList.toggle("bg-deepBrown", active);
+          b.classList.toggle("text-heritageIvory", active);
+        });
+        renderCatalogGrid();
+      }
+      function filterCatalog() {
+        renderCatalogGrid();
+      }
+      function loadAndScrollToMonument(id, target) {
+        const found = MONUMENTS_DATA.find(
+          (m) =>
+            String(m.id) === String(id) ||
+            String(m.slug) === String(id) ||
+            String(m.uuid) === String(id),
+        );
+        if (!found) {
+          showToast("This heritage story could not be found.", "error");
+          return;
+        }
+
+        // Open the complete backend-loaded story.
+        showMonumentDetail(found.id, true);
+        setDetailVisibility(true);
+
+        setTimeout(() => {
+          const targetId =
+            target === "video"
+              ? "videoSection"
+              : target === "audio"
+                ? "audioSection"
+                : "storySection";
+          document
+            .getElementById(targetId)
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 250);
+      }
+      function formatTime(sec) {
+        if (!isFinite(sec)) return "00:00";
+        const m = Math.floor(sec / 60),
+          s = Math.floor(sec % 60);
+        return `${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
+      }
+      function escapeHtml(str) {
+        return String(str ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+      function showToast(message, type = "info") {
+        const toast = document.getElementById("toast"),
+          msg = document.getElementById("toastMessage");
+        if (!toast || !msg) return;
+        msg.innerText = message;
+        toast.classList.remove("hidden");
+        clearTimeout(window.__viraasaToast);
+        window.__viraasaToast = setTimeout(
+          () => toast.classList.add("hidden"),
+          3200,
+        );
+      }
+
+      async function loadViraasaData(silent = false) {
+        const params = new URLSearchParams(window.location.search);
+        const placeParam = (params.get("place") || "").trim();
+        isQrEntry = !!placeParam;
+        initialQrPlace = null;
+        try {
+          // IMPORTANT: QR opens one exact story, but the Explore catalog must
+          // still contain every active VIRAASA story.
+          const catalogRows = await sb(
+            `${VIRAASA_SUPABASE_URL}/rest/v1/heritage_places?active=eq.true&select=*`.replace(
+              VIRAASA_SUPABASE_URL,
+              "",
+            ),
+          );
+          const catalog = (catalogRows || []).map(mapSupabasePlace);
+
+          if (placeParam) {
+            const selectedRows = catalog.filter(
+              (m) => String(m.slug || "") === String(placeParam),
+            );
+            if (!selectedRows.length) {
+              if (!silent) showToast("This VIRAASA place was not found.", "error");
+              MONUMENTS_DATA = catalog;
+              if (!silent) {
+                ensureCategoryFilters();
+                renderCatalogGrid();
+              }
+              return;
+            }
+
+            const selected = selectedRows[0];
+            initialQrPlace = selected.id;
+
+            // Put the scanned place first, then keep the complete catalog.
+            MONUMENTS_DATA = [
+              selected,
+              ...catalog.filter((m) => m.id !== selected.id),
+            ];
+
+            const txt = document.querySelector("#qrScanOverlay p.font-bold");
+            const loc = document.getElementById("qrPlaceSummary");
+            if (txt) txt.innerText = "Scanned Place Detected:";
+            if (loc)
+              loc.innerText = `${textFor(selected.title)} • ${selected.location}`;
+          } else {
+            MONUMENTS_DATA = catalog;
+          }
+
+          if (!silent) {
+            ensureCategoryFilters();
+            renderCatalogGrid();
+          }
+        } catch (e) {
+          console.error(e);
+          if (!silent) showToast("Live heritage data could not be loaded.", "error");
+          else throw e;
+        }
+      }
+
+      // LIVE CUSTOMER SYNC: Admin -> Supabase -> this Customer page
+      // The Customer reads the same public.heritage_places table every few seconds.
+      // This avoids stale browser/CDN data and does not require Supabase Realtime setup.
+      let viraasaLiveSyncTimer = null;
+      let viraasaLiveSyncBusy = false;
+      let lastCatalogSig = "";
+      const catalogSignature = () =>
+        JSON.stringify((MONUMENTS_DATA || []).map((m) => m.raw));
+
+      async function syncCustomerFromSupabase() {
+        if (viraasaLiveSyncBusy || document.visibilityState === "hidden")
+          return;
+        viraasaLiveSyncBusy = true;
+        try {
+          const previousId =
+            currentMonument?.uuid || currentMonument?.raw?.id || null;
+          const wasDetail =
+            typeof currentView === "string" &&
+            currentView.startsWith("monument:");
+
+          await loadViraasaData(true);
+
+          // Nothing changed in the admin panel -> do NOT touch the page at all.
+          const sig = catalogSignature();
+          if (sig === lastCatalogSig) return;
+          lastCatalogSig = sig;
+
+          ensureCategoryFilters();
+          if (previousId && wasDetail) {
+            const fresh = MONUMENTS_DATA.find(
+              (m) => m.uuid === previousId || m.raw?.id === previousId,
+            );
+            if (fresh) {
+              renderMonument(fresh);
+              updateBackButton();
+            }
+          } else if (currentView === "home" || currentView === "explore") {
+            renderCatalogGrid();
+          }
+        } catch (e) {
+          console.warn("VIRAASA live sync:", e);
+        } finally {
+          viraasaLiveSyncBusy = false;
+        }
+      }
+
+      function startViraasaLiveSync() {
+        if (viraasaLiveSyncTimer) clearInterval(viraasaLiveSyncTimer);
+        viraasaLiveSyncTimer = setInterval(syncCustomerFromSupabase, 15000);
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") syncCustomerFromSupabase();
+      });
+
+      // Customer entry rules: first visit asks language. A refresh always returns Home.
+      function isRefreshNavigation() {
+        try {
+          return (
+            performance.getEntriesByType("navigation")[0]?.type === "reload"
+          );
+        } catch {
+          return false;
+        }
+      }
+      window.addEventListener("beforeunload", saveMediaPositions);
+      window.addEventListener("DOMContentLoaded", async () => {
+        setupAudioEvents();
+        setupVideoEvents();
+        await ensureAuthPanel();
+        const saved = localStorage.getItem("viraasa_language");
+        currentLang = saved || "en";
+        selectInitialLang(currentLang);
+        await loadViraasaData();
+        lastCatalogSig = catalogSignature();
+        bindMediaExtras();
+        startViraasaLiveSync();
+        refreshAuthUI();
+        if (!saved) {
+          document.getElementById("qrScanOverlay")?.classList.remove("hidden");
+          showHome();
+          return;
+        }
+        applyLanguage(currentLang);
+        if (
+          isRefreshNavigation() ||
+          !new URLSearchParams(location.search).get("place")
+        )
+          showHome();
+        else if (initialQrPlace) showMonumentDetail(initialQrPlace, false);
+        else showHome();
+        updateBackButton();
+      });
+    </script>
+  </body>
+</html>
